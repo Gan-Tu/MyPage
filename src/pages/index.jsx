@@ -17,10 +17,11 @@ import pridewalk from '@/images/photos/pridewalk.jpg'
 import waterfall from '@/images/photos/waterfall.jpg'
 import bungy from '@/images/photos/bungy.jpg'
 import egypt from '@/images/photos/egypt.jpg'
-import logoGoogle from '@/images/logos/google.svg'
-import logoApple from '@/images/logos/apple.png'
-import logoCal from '@/images/logos/cal.png'
-import logoStanford from '@/images/logos/stanford.png'
+import google from '@/images/logos/google.svg'
+import youtube from '@/images/logos/youtube.svg'
+import apple from '@/images/logos/apple.png'
+import cal from '@/images/logos/cal.png'
+import stanford from '@/images/logos/stanford.png'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
@@ -43,6 +44,26 @@ function BriefcaseIcon(props) {
       <path
         d="M3 14.25h6.249c.484 0 .952-.002 1.316.319l.777.682a.996.996 0 0 0 1.316 0l.777-.682c.364-.32.832-.319 1.316-.319H21M8.75 6.5V4.75a2 2 0 0 1 2-2h2.5a2 2 0 0 1 2 2V6.5"
         className="stroke-zinc-400 dark:stroke-zinc-500"
+      />
+    </svg>
+  )
+}
+
+function AcademicCapIcon(props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
+        className="stroke-zinc-600 dark:stroke-zinc-500"
       />
     </svg>
   )
@@ -89,17 +110,24 @@ function WorkResume() {
     {
       company: 'Google',
       title: 'Software Engineer',
-      logo: logoGoogle,
-      start: '2019',
+      logo: google,
+      start: '2021',
       end: {
         label: 'Now',
         dateTime: new Date().getFullYear(),
       },
     },
     {
+      company: 'YouTube (Google)',
+      title: 'Software Engineer',
+      logo: youtube,
+      start: '2019',
+      end: '2021',
+    },
+    {
       company: 'Apple',
       title: 'Software Internship',
-      logo: logoApple,
+      logo: apple,
       start: '2018',
       end: '2018',
     },
@@ -157,14 +185,14 @@ function EducationResume() {
     {
       school: 'Stanford University',
       title: 'SCPD Student',
-      logo: logoStanford,
+      logo: stanford,
       start: '2019',
       end: '2022',
     },
     {
       school: 'University of California, Berkeley',
       title: 'Undergraduate Student',
-      logo: logoCal,
+      logo: cal,
       start: '2015',
       end: '2019',
     },
@@ -172,7 +200,7 @@ function EducationResume() {
   return (
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-        <BriefcaseIcon className="h-6 w-6 flex-none" />
+        <AcademicCapIcon className="h-6 w-6 flex-none" />
         <span className="ml-3">Education</span>
       </h2>
       <ol className="mt-6 space-y-4">
