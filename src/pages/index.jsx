@@ -91,7 +91,7 @@ function Article({ article }) {
   return (
     <Card as="article">
       <Card.Title href={`/articles/${article.slug}`}>
-        {article.title}
+        [Placeholder] {article.title}
       </Card.Title>
       <Card.Eyebrow as="time" dateTime={article.date} decorate>
         {formatDate(article.date)}
@@ -319,9 +319,8 @@ export default function Home({ articles }) {
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             I’m Gan, a software developer, graphic designer and entrepreneur
-            based in Los Angeles and New York City. I’m the founder and CEO of
-            Planetaria, where my friend Travis and I develop technologies that
-            empower regular people to explore space on their own terms.
+            based in Los Angeles and New York City. I develop technologies that
+            empower regular people to explore the world on their own terms.
           </p>
           <div className="mt-6 flex gap-6">
             <SocialLink
