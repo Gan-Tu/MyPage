@@ -29,6 +29,7 @@ import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 import Biography from '@/components/Biography'
+import toast from 'react-hot-toast'
 
 function BriefcaseIcon(props) {
   return (
@@ -176,7 +177,11 @@ function WorkResume() {
           </li>
         ))}
       </ol>
-      <Button href="#" variant="secondary" className="group mt-6 w-full">
+      <Button
+        variant="secondary"
+        className="group mt-6 w-full"
+        onClick={() => toast.error('CV not available for download yet.')}
+      >
         Download CV
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
