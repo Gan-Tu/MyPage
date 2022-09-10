@@ -299,7 +299,7 @@ export default function Home({ articles }) {
     <>
       <Head>
         <title>
-          Gan Tu - Software designer, founder, and amateur astronaut
+          Gan Tu - Software designer, founder, and professional dreamer.
         </title>
         <meta
           name="description"
