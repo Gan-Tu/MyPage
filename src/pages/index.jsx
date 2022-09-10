@@ -22,6 +22,9 @@ import youtube from '@/images/logos/youtube.svg'
 import apple from '@/images/logos/apple.png'
 import cal from '@/images/logos/cal.png'
 import stanford from '@/images/logos/stanford.png'
+import udacity from '@/images/logos/udacity.png'
+import harvard from '@/images/logos/harvard.png'
+import wharton from '@/images/logos/wharton.png'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
@@ -184,17 +187,38 @@ function EducationResume() {
   let resume = [
     {
       school: 'Stanford University',
-      title: 'SCPD Student',
+      title: 'Advanced Software Systems',
       logo: stanford,
       start: '2019',
       end: '2022',
     },
     {
+      school: 'Harvard Business School',
+      title: 'Alternative Investment Certificate',
+      logo: harvard,
+      start: '2020',
+      end: '2020',
+    },
+    {
       school: 'University of California, Berkeley',
-      title: 'Undergraduate Student',
+      title: 'B.A. Computer Science',
       logo: cal,
       start: '2015',
       end: '2019',
+    },
+    {
+      school: 'Udacity',
+      title: 'Deep Learning Nanodegree',
+      logo: udacity,
+      start: '2016',
+      end: '2018',
+    },
+    {
+      school: 'Wharton School of Business',
+      title: 'Business & Finance Specializations',
+      logo: wharton,
+      start: '2015',
+      end: '2016',
     },
   ]
   return (
