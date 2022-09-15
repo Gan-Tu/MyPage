@@ -10,7 +10,7 @@ import {
   GitHubIcon,
   LinkedInIcon,
 } from '@/components/SocialIcons'
-import portraitImage from '@/images/portrait.jpg'
+import portraitImage from '@/images/portrait.png'
 import Biography from '@/components/Biography'
 
 function SocialLink({ className, href, children, icon: Icon }) {
