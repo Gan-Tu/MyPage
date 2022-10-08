@@ -25,11 +25,11 @@ function Tool({ title, href, children }) {
   )
 }
 
-export default function Uses() {
+export default function Skills() {
   return (
     <>
       <Head>
-        <title>Uses - Gan Tu</title>
+        <title>Skills - Gan Tu</title>
         <meta
           name="description"
           content="Software I use, gadgets I love, and other things I recommend."
