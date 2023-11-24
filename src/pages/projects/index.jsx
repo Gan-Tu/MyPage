@@ -3,7 +3,7 @@ import Head from 'next/head'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
-import { projects } from './project-details'
+import { projects } from '@/lib/project-details'
 
 function LinkIcon(props) {
   return (
