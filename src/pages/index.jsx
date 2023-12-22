@@ -7,7 +7,6 @@ import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
 import {
-  TwitterIcon,
   InstagramIcon,
   GitHubIcon,
   LinkedInIcon,
@@ -282,7 +281,7 @@ function Photos() {
             <div
               key={image.src}
               className={clsx(
-                'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl',
+                'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800',
                 rotations[imageIndex % rotations.length]
               )}
             >
@@ -305,7 +304,7 @@ export default function Home({ articles }) {
     <>
       <Head>
         <title>
-          Gan Tu - Software designer, founder, and professional dreamer.
+          Gan Tu - Software designer, developer, and professional dreamer.
         </title>
         <meta
           name="description"
@@ -314,20 +313,18 @@ export default function Home({ articles }) {
       </Head>
       <Container className="mt-9">
         <div className="max-w-2xl">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Software designer, founder, and professional dreamer.
+          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+            Software designer, developer, and professional dreamer.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             I’m Gan, a software developer, graphic designer and entrepreneur
-            based in Los Angeles and New York City. I develop technologies that
-            empower regular people to explore the world on their own terms.
+            based in Los Angeles and New York City. I enjoy developing aesthetic
+            and useful technologies for fun and geeky endeavors. I am currently
+            focused in the space of AI and AR. It's also a life goal of mine to
+            help bring to life and witness the birth of General Artificial
+            Intelligence in my lifetime.
           </p>
           <div className="mt-6 flex gap-6">
-            <SocialLink
-              href="https://go.tugan.me/twitter"
-              aria-label="Follow on Twitter"
-              icon={TwitterIcon}
-            />
             <SocialLink
               href="https://go.tugan.me/instagram"
               aria-label="Follow on Instagram"
