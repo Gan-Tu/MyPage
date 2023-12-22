@@ -52,6 +52,36 @@ export default function Tools() {
             </Tool>
           </ToolsSection>
           <ToolsSection title="Productivity">
+            <Tool title="CleanShot X">
+              CleanShot X is the best screenshot and screen recording app for
+              Mac that I've used. It has various features like OCR, built-in
+              annotation tool, Cloud uploading, scrolling capture, background
+              tool, and a lot more.
+            </Tool>
+            <Tool title="Alfred 5">
+              I fell in love with Alfred ever since it's introduced to me by
+              friends. It’s not the newest kid on the block but it’s still the
+              fastest. The Sublime Text of the application launcher world.
+            </Tool>
+            <Tool title="Things">
+              Everyone has their own task management app, and Things is my
+              favourite. I like its minimalist design, cute interaction
+              animations, and amazing cross platform support.
+            </Tool>
+            <Tool title="Day One">
+              I journal daily, and this app has the records of all my random
+              thoughts and memories throughout the years.
+            </Tool>
+            <Tool title="Finance by Matthias Hochgatterer">
+              A doubule-entry finance journaling app by developer Matthias
+              Hochgatterer. You cannot even find it easily on Apple Store, but I
+              think it's better than all other finance apps out there. It's
+              simple and straight-to-the-point. I have the habbit of logging and
+              categorizing every single financial transaction I've made for
+              decades now, and this is the app I've stick with all this time.
+            </Tool>
+          </ToolsSection>
+          <ToolsSection title="Developer Tools">
             <Tool title="Sublime Text">
               I don’t care if it’s missing all of the fancy IDE features
               everyone else relies on, Sublime Text is still the best text
@@ -65,25 +95,20 @@ export default function Tools() {
               aren’t just part of the macOS Terminal but it’s what I use. Maybe
               I just like the better color theme in iTerm2.
             </Tool>
-            <Tool title="Alfred 5">
-              I fell in love with Alfred ever since it's introduced to me by
-              friends. It’s not the newest kid on the block but it’s still the
-              fastest. The Sublime Text of the application launcher world.
+            <Tool title="Bun">
+              Bun is the new popular kid on the street. It's a fast JavaScript
+              runtime, bundler, test runner, and package manager all in one. I
+              really would like to see this take off and make npm and yarn the
+              history.
             </Tool>
           </ToolsSection>
-          <ToolsSection title="Developer Framework">
+          <ToolsSection title="Framework">
             <Tool title="React">
               Amongst all the web framework I learned, React is my favorite.
               After the introduction of React hooks, I fell deeply in love with
               it. I prefer React over all other frameworks I learned and used
               over the years, including but not limited to Django, Flask, Ruby
               on Rails, AngularJS. My favoirte React framework is NextJS.
-            </Tool>
-            <Tool title="Bun">
-              Bun is the new popular kid on the street. It's a fast JavaScript
-              runtime, bundler, test runner, and package manager all in one. I
-              really would like to see this take off and make npm and yarn the
-              history.
             </Tool>
             <Tool title="Tailwind CSS">
               Let's say that I hated CSS until I learned Tailwind CSS. It's
