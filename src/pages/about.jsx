@@ -44,7 +44,7 @@ export default function About() {
         <title>About - Gan Tu</title>
         <meta
           name="description"
-          content="I’m Gan Tu. I live in New York City, where I design the future."
+          content="I am Gan Tu and this is a short biography of my story so far"
         />
       </Head>
       <Container className="mt-16 sm:mt-32">
@@ -60,8 +60,8 @@ export default function About() {
             </div>
           </div>
           <div className="lg:order-first lg:row-span-2">
-            <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-              I’m Gan Tu. I live in New York City, where I design the future.
+            <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+              I am Gan Tu and this is a short biography of my story so far
             </h1>
             <Biography />
           </div>
