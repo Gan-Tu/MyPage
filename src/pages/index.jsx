@@ -27,7 +27,7 @@ import wharton from '@/images/logos/wharton.png'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
-import Biography from '@/components/Biography'
+import ShortBlurbBiography from '@/components/ShortBlurbBiography'
 import toast from 'react-hot-toast'
 
 function BriefcaseIcon(props) {
@@ -350,7 +350,7 @@ export default function Home({ articles }) {
             {articles.map((article) => (
               <Article key={article.slug} article={article} />
             ))}
-            {articles?.length == 0 && <Biography />}
+            {articles?.length == 0 && <ShortBlurbBiography />}
           </div>
           <div className="space-y-10 lg:pl-16 xl:pl-24">
             <WorkResume />
