@@ -304,7 +304,8 @@ export default function Home({ articles }) {
     <>
       <Head>
         <title>
-          Gan Tu - Software designer, developer, and professional dreamer.
+          Gan Tu - Software developer, travel enthusiasts and professional
+          dreamer.
         </title>
         <meta
           name="description"
@@ -314,7 +315,7 @@ export default function Home({ articles }) {
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-            Software designer, developer, and professional dreamer.
+            Software developer, travel enthusiasts and professional dreamer.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             I’m Gan, a software developer, graphic designer and entrepreneur
