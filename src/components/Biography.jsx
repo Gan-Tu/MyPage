@@ -53,12 +53,13 @@ function Biography() {
         To satisfy my intellectual endeavors, I spent my first college summer in
         Europe doing an entrepreneurship accelerator program. For my second
         summer, I attended an art school and learned graphic design, product
-        design, and transportation design. It was three months of intensive
-        drawing. For my last summer, I spent a whole year doing a co-op at Apple
-        working on Siri and AI. Once I was back at school to finish my degree, I
-        also audited various courses in Law School, including but not limited to
-        Contract Law, Constitutional Law, Business Law - Negligence and Torts,
-        and Criminal Law. As you can see, I really like to learn new things.
+        design, transportation design, and 3D designs. It was three months of
+        intensive drawing. For my last summer, I spent a whole year doing a
+        co-op at Apple working on Siri and AI. Once I was back at school to
+        finish my degree, I also audited various courses in Law School,
+        including but not limited to Contract Law, Constitutional Law, Business
+        Law - Negligence and Torts, and Criminal Law. As you can see, I really
+        like to learn new things.
       </p>
 
       <p>
