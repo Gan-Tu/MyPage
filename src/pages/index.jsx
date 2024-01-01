@@ -90,7 +90,7 @@ function Article({ article }) {
   return (
     <Card as="article">
       <Card.Title href={`/articles/${article.slug}`}>
-        [Placeholder] {article.title}
+        {article.title}
       </Card.Title>
       <Card.Eyebrow as="time" dateTime={article.date} decorate>
         {formatDate(article.date)}
@@ -113,7 +113,7 @@ function WorkResume() {
   let resume = [
     {
       company: 'Google',
-      title: 'Software Engineer',
+      title: 'Senior Software Engineer',
       logo: google,
       start: '2021',
       end: {
@@ -122,7 +122,7 @@ function WorkResume() {
       },
     },
     {
-      company: 'YouTube (Google)',
+      company: 'YouTube',
       title: 'Software Engineer',
       logo: youtube,
       start: '2019',
@@ -130,7 +130,7 @@ function WorkResume() {
     },
     {
       company: 'Apple',
-      title: 'Software Internship',
+      title: 'Machine Learning Co-Op',
       logo: apple,
       start: '2018',
       end: '2018',
@@ -176,14 +176,14 @@ function WorkResume() {
           </li>
         ))}
       </ol>
-      <Button
+      {/* <Button
         variant="secondary"
         className="group mt-6 w-full"
         onClick={() => toast.error('CV not available for download yet.')}
       >
         Download CV
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
-      </Button>
+      </Button> */}
     </div>
   )
 }

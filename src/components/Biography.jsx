@@ -68,7 +68,7 @@ function Biography() {
         different country each year, and I am gratful for having the time and
         means to make those memories. I am also a recreational scuba diver,
         working on my pilot's license, and trying to get better at both skiing
-        and snowboarding.
+        and snowboarding. Oh, I am also an amateur magician 🎩 .
       </p>
     </div>
   )
