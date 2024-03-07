@@ -1,5 +1,15 @@
 export const projects = [
   {
+    name: 'Google Search Page',
+    description:
+      'I led and developed ~12% of top organized google search pages that you use and love everyday.',
+    link: {
+      href: 'https://go.tugan.me/osrp-pages',
+      label: 'Google Search',
+    },
+    logo: 'https://steelbluemedia.com/wp-content/uploads/2019/06/new-google-favicon-512.png',
+  },
+  {
     name: 'GoList',
     description:
       'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
@@ -18,6 +28,36 @@ export const projects = [
       label: 'project-music',
     },
     logo: 'https://i.pinimg.com/originals/a1/ba/f0/a1baf0aa72ec15ae66a72c0d316d98cc.jpg',
+  },
+  {
+    name: 'Self Driving Car',
+    description:
+      'Projects focused on traffic sign classifier, behavioral-cloning, lane line detection, vehicle detection & tracking, kalman filters, particle filters, PID-controller, and MPC.',
+    link: {
+      href: 'https://github.com/Gan-Tu/Udacity-Self-Driving-Car',
+      label: 'github.com',
+    },
+    logo: 'https://cdn1.iconfinder.com/data/icons/car-engine-dashboard-lights-solid-style-set-2/91/Car_Engine_-_Dashboard_Lights_83-512.png',
+  },
+  {
+    name: 'Autonomous Drone Follow',
+    description:
+      'A neural network to identify and track a target in simulation and then issue commands to a drone to follow that target.',
+    link: {
+      href: 'https://www.youtube.com/watch?v=X4Bnkwqo6D0',
+      label: 'github.com',
+    },
+    logo: 'https://github.com/Gan-Tu/RoboND-Drone-Follow-Me/raw/master/img/readme.png',
+  },
+  {
+    name: 'Robotics Search and Sample Return',
+    description:
+      'A robot rover that autonomously maps a simulated environment, searches for samples of interest, and pickes them up.',
+    link: {
+      href: 'https://www.youtube.com/watch?v=IRTw2f-onKQ',
+      label: 'github.com',
+    },
+    logo: 'https://media.istockphoto.com/id/1325631421/vector/robat-rover-exploring-the-planet-mars-mars-exploration-mission-vector-illustration-isolated.jpg?s=612x612&w=0&k=20&c=eSTIuEhfM7i4Sht51iB2EEveNW4dNDvoEhEyDFljYRY=',
   },
   {
     name: 'AirBnB Website Clone',
@@ -48,6 +88,16 @@ export const projects = [
       label: 'github.com',
     },
     logo: 'https://cdn-icons-png.flaticon.com/512/533/533494.png',
+  },
+  {
+    name: 'Computer Vision',
+    description:
+      'A series of Udacity Nanodegree program projects focused on facial recognition, facial keypoints detection, automatic image captioning, and landmark detection and localization using SLAM.',
+    link: {
+      href: 'https://github.com/Gan-Tu/Udacity-Computer-Vision',
+      label: 'github.com',
+    },
+    logo: 'https://media.istockphoto.com/id/1209656988/vector/computer-vision-black-icon-concept-illustration-vector-flat-symbol-glyph-sign.jpg?s=612x612&w=0&k=20&c=KSUuvXCNjHapYqNA_du1D2uz9b0x-gErhJmp9zDoJZ4=',
   },
   {
     name: 'Cloth Simulator',
