@@ -64,7 +64,7 @@ function Biography() {
 
       <p>
         Besides work, I love traveling. I have solo traveled to all 7
-        continents, 26 countries and counting. It's my goal to travel to a
+        continents, 34 countries and counting. It's my goal to travel to a
         different country each year, and I am gratful for having the time and
         means to make those memories. I am also a recreational scuba diver,
         working on my pilot's license, and trying to get better at both skiing
