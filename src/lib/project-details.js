@@ -2,7 +2,7 @@ export const projects = [
   {
     name: 'Google Search Page',
     description:
-      'I led and developed ~12% of top organized google search pages that you use and love everyday.',
+      'I led and developed google knowledge panels for ~20%+ global search traffic that you use and love everyday. Currently leading the development of knowledge panels powered by generative AI.',
     link: {
       href: 'https://go.tugan.me/osrp-pages',
       label: 'Google Search',
