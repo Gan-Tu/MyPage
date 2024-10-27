@@ -113,7 +113,7 @@ function WorkResume() {
   let resume = [
     {
       company: 'Google',
-      title: 'Senior Software Engineer',
+      title: 'Staff Software Engineer',
       logo: google,
       start: '2021',
       end: {
