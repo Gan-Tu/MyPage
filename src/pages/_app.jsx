@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { Analytics } from '@vercel/analytics/react';
-
+import { Analytics } from '@vercel/analytics/react'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { Toaster } from 'react-hot-toast'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import '@/styles/tailwind.css'
 import 'focus-visible'
@@ -37,6 +37,7 @@ export default function App({ Component, pageProps, router }) {
         <Footer />
       </div>
       <Analytics />
+      <SpeedInsights />
     </>
   )
 }
