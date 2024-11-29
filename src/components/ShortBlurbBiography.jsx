@@ -15,7 +15,9 @@ function ShortBlurbBiography() {
         visited, and I print all my travel photos out in a photo album. It's a
         rewarding experience to see maps getting fuller and fuller with little
         travel pins, and the photo albums getting filled up. It's my life's
-        journeys and experiences recorded in snapshots.
+        journeys and experiences recorded in snapshots. So far, I have been to
+        all seven continents and both polar regions, where I found my passion
+        for wildlife photography as well.
       </p>
 
       <p>
