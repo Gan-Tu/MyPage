@@ -15,7 +15,17 @@ export const projects = [
       'AI Knowledge is your on-demand LLM-powered topic card generator. Just ask a question, and it serves up a sleek, concise card packed with a title, subtitle, description, key facts, and even hero videos and images.',
     link: {
       href: 'https://mycool.ai',
-      label: 'MyAI',
+      label: 'AI Knowledge by MyAI',
+    },
+    logo: 'https://mycool.ai/favicon.ico',
+  },
+  {
+    name: 'AI Claim Extractor',
+    description:
+      'Claim Extractor is AI-powered factual claims breakdown tool. Provide any text, and it instantly extracts individual factual claims, in clear and concise sentences for analysis or review.',
+    link: {
+      href: 'https://mycool.ai/claims',
+      label: 'Claims Extractor by MyAI',
     },
     logo: 'https://mycool.ai/favicon.ico',
   },
