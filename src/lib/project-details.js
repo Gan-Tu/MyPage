@@ -10,6 +10,16 @@ export const projects = [
     logo: 'https://steelbluemedia.com/wp-content/uploads/2019/06/new-google-favicon-512.png',
   },
   {
+    name: 'AI Knowledge Card',
+    description:
+      'AI Knowledge is your on-demand LLM-powered topic card generator. Just ask a question, and it serves up a sleek, concise card packed with a title, subtitle, description, key facts, and even hero videos and images.',
+    link: {
+      href: 'https://mycool.ai',
+      label: 'MyAI',
+    },
+    logo: 'https://mycool.ai/favicon.ico',
+  },
+  {
     name: 'GoList',
     description:
       'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
