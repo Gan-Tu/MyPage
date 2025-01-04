@@ -30,6 +30,26 @@ export const projects = [
     logo: 'https://mycool.ai/favicon.ico',
   },
   {
+    name: 'AI Citation Necessity',
+    description:
+      'Citation Necessity is an AI-driven tool for evaluating the citation needs of written text. Input any passage, and it categorizes each sentence based on whether it requires evidence, enhancing academic and professional rigor.',
+    link: {
+      href: 'https://mycool.ai/citations',
+      label: 'Citation Necessity by MyAI',
+    },
+    logo: 'https://mycool.ai/favicon.ico',
+  },
+  {
+    name: 'Pixel Crafter',
+    description:
+      'Transform your ideas into breathtaking visuals with PixelCrafter, the AI-powered tool that generates stunning images in any style. From hyper-realistic designs to artistic masterpieces, PixelCrafter brings your imagination to life effortlessly.',
+    link: {
+      href: 'https://mycool.ai/pixels',
+      label: 'Pixel Crafter by MyAI',
+    },
+    logo: 'https://mycool.ai/favicon.ico',
+  },
+  {
     name: 'GoList',
     description:
       'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
