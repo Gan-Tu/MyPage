@@ -67,13 +67,13 @@ const AudioPlayer = ({ title, src, className }) => {
 
   return (
     <div
-      className={`w-full max-w-3xl rounded-lg bg-white p-4 shadow ${className}`}
+      className={`w-full max-w-3xl rounded-lg bg-white p-4 shadow dark:bg-gray-800 ${className}`}
     >
       <div className="flex items-center gap-4">
         {/* Large Play Button */}
         <button
           onClick={togglePlay}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-black transition-colors hover:bg-gray-800"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-black transition-colors hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600"
         >
           {isPlaying ? (
             <PauseIcon className="h-8 w-8 text-white" />
@@ -84,7 +84,7 @@ const AudioPlayer = ({ title, src, className }) => {
 
         <div className="flex-1 space-y-2">
           {/* Title and Time */}
-          <div className="flex justify-between text-sm text-gray-500">
+          <div className="flex justify-between text-sm text-gray-500 dark:text-gray-300">
             {title && <span>{title}</span>}
             <div className="flex gap-1">
               <span>{formatTime(currentTime)}</span>
@@ -101,28 +101,33 @@ const AudioPlayer = ({ title, src, className }) => {
               max={duration || 0}
               value={currentTime}
               onChange={handleProgressChange}
-              className="h-1 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-black"
+              className="h-1 w-full cursor-pointer appearance-none rounded-full bg-gray-200 accent-black dark:bg-gray-600 dark:accent-gray-400"
               style={{
-                background: `linear-gradient(to right, black ${
+                background: `linear-gradient(to right, ${
+                  isPlaying ? 'black' : 'gray'
+                } ${(currentTime / duration) * 100}%, #e5e7eb ${
                   (currentTime / duration) * 100
-                }%, #e5e7eb ${(currentTime / duration) * 100}%)`,
+                }%)`,
               }}
             />
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-4 text-gray-600">
+          <div className="flex items-center justify-center gap-4 text-gray-600 dark:text-gray-300">
             <select
-              className="cursor-pointer bg-transparent text-sm outline-none hover:text-black"
+              className="cursor-pointer bg-transparent text-sm outline-none hover:text-black dark:hover:text-white"
               onChange={updatePlaybackRate}
             >
               <option value={1.0}>1.0x</option>
               <option value={1.5}>1.5x</option>
               <option value={2.0}>2.0x</option>
             </select>
-            <button onClick={toggleMute} className="hover:text-black">
+            <button
+              onClick={toggleMute}
+              className="hover:text-black dark:hover:text-white"
+            >
               {isMuted ? (
-                <SpeakerXMarkIcon className="h-4 w-4 text-gray-500" />
+                <SpeakerXMarkIcon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
               ) : (
                 <SpeakerWaveIcon className="h-4 w-4" />
               )}
