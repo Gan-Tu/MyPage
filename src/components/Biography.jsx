@@ -1,8 +1,14 @@
-import React from 'react'
+import AudioPlayer from './AudioPlayer'
 
 function Biography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+      <div className="py-2">
+        <AudioPlayer
+          title="Listen to this, in my AI voice clone!"
+          src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography.mp3"
+        />
+      </div>
       <p>
         Some people know me as a technical geek, while others know me as a
         passionate graphic designer. In my view, a beautiful design not only

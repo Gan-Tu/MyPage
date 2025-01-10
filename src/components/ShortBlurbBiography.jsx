@@ -1,8 +1,15 @@
-import React from 'react'
+import AudioPlayer from './AudioPlayer'
 
 function ShortBlurbBiography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+      <div className="py-2">
+        <AudioPlayer
+          title="Listen to this, in my AI voice clone!"
+          src="https://s3.amazonaws.com/tugan/public/audio/mypage-intro.mp3"
+        />
+      </div>
+
       <p>
         I love traveling internationally. It's a magical feeling to be on the
         road, hopping between tourist attractions and destinations, touring new
