@@ -7,7 +7,17 @@ export const projects = [
       href: 'https://go.tugan.me/osrp-pages',
       label: 'Google Search',
     },
-    logo: 'https://steelbluemedia.com/wp-content/uploads/2019/06/new-google-favicon-512.png',
+    logo: 'https://cdn1.iconfinder.com/data/icons/logos-brands-in-colors/544/Google__G__Logo-512.png',
+  },
+  {
+    name: 'URL Reader',
+    description:
+      'An API that takes a URL as a query parameter and returns a Markdown version of the parsed HTML content of the website.',
+    link: {
+      href: 'https://github.com/Gan-Tu/UrlReader',
+      label: 'github.com',
+    },
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdF6iEgRYymyrluNji-uJBd7_JIIX9octrpw&s',
   },
   {
     name: 'AI Knowledge Card',
