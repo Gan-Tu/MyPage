@@ -30,6 +30,27 @@ export const projects = [
     logo: 'https://mycool.ai/favicon.ico',
   },
   {
+    name: 'GoList',
+    description:
+      'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
+    link: {
+      href: 'https://goli.st',
+      label: 'goli.st',
+    },
+    logo: 'https://goli.st/logo192.png',
+  },
+  {
+    name: 'Project Music',
+    description:
+      'An explorative UI concept website for being a hub for artists to collaborate and showcase their work and engage with their fans.',
+    link: {
+      href: 'https://project-music.tugan.app',
+      label: 'project-music',
+    },
+    logo: 'https://i.pinimg.com/originals/a1/ba/f0/a1baf0aa72ec15ae66a72c0d316d98cc.jpg',
+  },
+
+  {
     name: 'AI Claim Extractor',
     description:
       'Claim Extractor is AI-powered factual claims breakdown tool. Provide any text, and it instantly extracts individual factual claims, in clear and concise sentences for analysis or review.',
@@ -60,24 +81,14 @@ export const projects = [
     logo: 'https://mycool.ai/favicon.ico',
   },
   {
-    name: 'GoList',
+    name: 'Web Summarizer',
     description:
-      'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
+      'Summarize any web page in seconds with Web Summarizer, the AI-powered tool that extracts the most important information from any URL. Get clear, concise summaries for quick review and understanding.',
     link: {
-      href: 'https://goli.st',
-      label: 'goli.st',
+      href: 'https://mycool.ai/web-summarizer',
+      label: 'Web Summarizer by MyAI',
     },
-    logo: 'https://goli.st/logo192.png',
-  },
-  {
-    name: 'Project Music',
-    description:
-      'An explorative UI concept website for being a hub for artists to collaborate and showcase their work and engage with their fans.',
-    link: {
-      href: 'https://project-music.tugan.app',
-      label: 'project-music',
-    },
-    logo: 'https://i.pinimg.com/originals/a1/ba/f0/a1baf0aa72ec15ae66a72c0d316d98cc.jpg',
+    logo: 'https://mycool.ai/favicon.ico',
   },
   {
     name: 'Self Driving Car',
