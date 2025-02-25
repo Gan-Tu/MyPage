@@ -90,16 +90,14 @@ export default function Tools() {
             <Tool title="Visual Studio Code">
               This one needs no introduction. The king of IDE for writing code.
             </Tool>
+            <Tool title="Cursor">
+              Cursor AI is really nice as an alternative to GitHub co-pilot, so
+              I use it when I have free quota avaliable since I don't want to pay.
+            </Tool>
             <Tool title="iTerm2">
               I’m honestly not even sure what features I get with this that
               aren’t just part of the macOS Terminal but it’s what I use. Maybe
               I just like the better color theme in iTerm2.
-            </Tool>
-            <Tool title="Bun">
-              Bun is the new popular kid on the street. It's a fast JavaScript
-              runtime, bundler, test runner, and package manager all in one. I
-              really would like to see this take off and make npm and yarn the
-              history.
             </Tool>
           </ToolsSection>
           <ToolsSection title="Framework">
