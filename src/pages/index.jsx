@@ -21,11 +21,11 @@ import stanford from '@/images/logos/stanford.png'
 import udacity from '@/images/logos/udacity.png'
 import wharton from '@/images/logos/wharton.png'
 import youtube from '@/images/logos/youtube.svg'
-import bungy from '@/images/photos/bungy.jpg'
-import egypt from '@/images/photos/egypt.jpg'
-import pridewalk from '@/images/photos/pridewalk.jpg'
-import skydiving from '@/images/photos/skydiving.jpg'
-import waterfall from '@/images/photos/waterfall.jpg'
+import polarplunge from '@/images/photos/polarplunge.jpg'
+import safari from '@/images/photos/safari.jpeg'
+import scuba from '@/images/photos/scuba.jpg'
+import skydiving2 from '@/images/photos/skydiving2.jpg'
+import skydiving3 from '@/images/photos/skydiving3.jpg'
 import { formatDate } from '@/lib/formatDate'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
@@ -284,12 +284,12 @@ function Photos() {
   return (
     <div className="mt-16 sm:mt-20">
       <div className="-my-4 flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
-        {[pridewalk, skydiving, waterfall, bungy, egypt].map(
+        {[skydiving2, polarplunge, skydiving3, safari, scuba].map(
           (image, imageIndex) => (
             <div
               key={image.src}
               className={clsx(
-                'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 sm:w-72 sm:rounded-2xl dark:bg-zinc-800',
+                'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-zinc-100 dark:bg-zinc-800 sm:w-72 sm:rounded-2xl',
                 rotations[imageIndex % rotations.length]
               )}
             >
@@ -297,6 +297,7 @@ function Photos() {
                 src={image}
                 alt=""
                 sizes="(min-width: 640px) 18rem, 11rem"
+                unoptimized={false}
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </div>
@@ -322,7 +323,7 @@ export default function Home({ articles }) {
       </Head>
       <Container className="mt-9">
         <div className="max-w-2xl">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
             Software developer, travel enthusiasts and professional dreamer.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
