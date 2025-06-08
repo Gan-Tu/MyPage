@@ -1,34 +1,34 @@
-import Image from 'next/image'
-import Head from 'next/head'
-import Link from 'next/link'
 import clsx from 'clsx'
+import Head from 'next/head'
+import Image from 'next/image'
+import Link from 'next/link'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
+import ShortBlurbBiography from '@/components/ShortBlurbBiography'
 import {
-  InstagramIcon,
   GitHubIcon,
+  InstagramIcon,
   LinkedInIcon,
 } from '@/components/SocialIcons'
-import skydiving from '@/images/photos/skydiving.jpg'
-import pridewalk from '@/images/photos/pridewalk.jpg'
-import waterfall from '@/images/photos/waterfall.jpg'
-import bungy from '@/images/photos/bungy.jpg'
-import egypt from '@/images/photos/egypt.jpg'
-import google from '@/images/logos/google.svg'
-import youtube from '@/images/logos/youtube.svg'
 import apple from '@/images/logos/apple.png'
 import cal from '@/images/logos/cal.png'
+import google from '@/images/logos/google.svg'
+import harvard from '@/images/logos/harvard.png'
+import openai from '@/images/logos/openai.svg'
 import stanford from '@/images/logos/stanford.png'
 import udacity from '@/images/logos/udacity.png'
-import harvard from '@/images/logos/harvard.png'
 import wharton from '@/images/logos/wharton.png'
+import youtube from '@/images/logos/youtube.svg'
+import bungy from '@/images/photos/bungy.jpg'
+import egypt from '@/images/photos/egypt.jpg'
+import pridewalk from '@/images/photos/pridewalk.jpg'
+import skydiving from '@/images/photos/skydiving.jpg'
+import waterfall from '@/images/photos/waterfall.jpg'
+import { formatDate } from '@/lib/formatDate'
 import { generateRssFeed } from '@/lib/generateRssFeed'
 import { getAllArticles } from '@/lib/getAllArticles'
-import { formatDate } from '@/lib/formatDate'
-import ShortBlurbBiography from '@/components/ShortBlurbBiography'
-import toast from 'react-hot-toast'
 
 function BriefcaseIcon(props) {
   return (
@@ -112,14 +112,21 @@ function SocialLink({ icon: Icon, ...props }) {
 function WorkResume() {
   let resume = [
     {
-      company: 'Google',
-      title: 'Staff Software Engineer',
-      logo: google,
-      start: '2021',
+      company: 'OpenAI',
+      title: 'Member of Technical Staff',
+      logo: openai,
+      start: '2025',
       end: {
         label: 'Now',
         dateTime: new Date().getFullYear(),
       },
+    },
+    {
+      company: 'Google',
+      title: 'Staff Software Engineer',
+      logo: google,
+      start: '2021',
+      end: '2025',
     },
     {
       company: 'YouTube',
