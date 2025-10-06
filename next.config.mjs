@@ -19,6 +19,7 @@ const nextConfig = {
         pathname: `/${photographyBucket}/**`,
       },
     ],
+    minimumCacheTTL: 2678400,
   },
   experimental: {
     // newNextLinkBehavior: true,
