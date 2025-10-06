@@ -171,6 +171,7 @@ export default function Photography({
     scrollTop: 0,
   })
   const shareCopyTimeoutRef = useRef(null)
+  const loadMoreTriggerRef = useRef(null)
 
   const router = useRouter()
   const routerIsReady = router?.isReady
@@ -605,6 +606,35 @@ export default function Photography({
     }
   }, [isLoadingMore, pagination, setAlbums, setSummary, setPagination, setLoadMoreError, setIsLoadingMore])
 
+  useEffect(() => {
+    if (!pagination?.hasMore || loadMoreError) {
+      return
+    }
+
+    const node = loadMoreTriggerRef.current
+    if (!node) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            handleLoadMore()
+            break
+          }
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(node)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [handleLoadMore, loadMoreError, pagination?.hasMore])
+
   const isDraggable = canZoom && zoomLevel > 1
 
   const handlePointerDown = (event) => {
@@ -773,7 +803,7 @@ export default function Photography({
               )}
 
               {pagination?.hasMore ? (
-                <div className="mt-6 flex justify-center">
+                <div ref={loadMoreTriggerRef} className="mt-6 flex justify-center">
                   <Button
                     type="button"
                     onClick={handleLoadMore}
@@ -814,7 +844,7 @@ export default function Photography({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="relative mx-auto max-w-5xl rounded-3xl bg-white/95 p-6 shadow-xl ring-1 ring-zinc-900/10 backdrop-blur dark:bg-zinc-900/95 dark:ring-white/10 sm:p-10">
-                <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                   <div>
                     <Dialog.Title className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
                       {formatAlbumName(activeAlbum?.name)}
@@ -831,7 +861,7 @@ export default function Photography({
                       ) : null
                     })()}
                   </div>
-                  <div className="flex w-full max-w-sm flex-col items-end gap-2 sm:w-auto">
+                  <div className="flex w-full max-w-sm flex-col items-start gap-2 sm:w-auto sm:items-end">
                     <div className="flex items-center gap-2 sm:gap-3">
                       {shareUrl ? (
                         <button

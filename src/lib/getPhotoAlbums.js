@@ -79,7 +79,7 @@ function stripAlbumPhotos(album) {
 
 export async function getPaginatedPhotoAlbums({
   page = 1,
-  pageSize = 9,
+  pageSize = 12,
   bucketName = DEFAULT_BUCKET,
 } = {}) {
   const { albums, summary } = await loadAlbumsWithCache({ bucketName })
@@ -229,8 +229,7 @@ function decodeServiceAccountKey(rawKey) {
 async function getStorageClient() {
   if (!storageClientPromise) {
     storageClientPromise = import('@google-cloud/storage').then(({ Storage }) => {
-      const credentials = decodeServiceAccountKey(process.env.GOOGLE_SERVICE_ACCOUNT_KEY
-      )
+      const credentials = decodeServiceAccountKey(process.env.GOOGLE_SERVICE_ACCOUNT_KEY)
 
       const projectId = process.env.GOOGLE_CLOUD_PROJECT
 
