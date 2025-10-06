@@ -438,8 +438,8 @@ export default function Photography({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative flex w-full max-w-6xl flex-col gap-4 text-zinc-100">
-                <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+              <Dialog.Panel className="relative flex w-full max-w-7xl flex-col gap-6 text-zinc-100">
+                <div className="mx-auto flex w-full max-w-5xl flex-wrap items-start justify-between gap-3 text-sm">
                   <div className="flex flex-col gap-1 text-xs sm:text-sm">
                     <span className="font-medium text-zinc-100">
                       {formatAlbumName(activeAlbum?.name)}
@@ -466,24 +466,6 @@ export default function Photography({
                     ) : null}
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={() => moveLightbox(-1)}
-                      aria-label="Previous item"
-                      disabled={!activeAlbum || !activeAlbum.photos?.length}
-                    >
-                      <ArrowLeftIcon className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={() => moveLightbox(1)}
-                      aria-label="Next item"
-                      disabled={!activeAlbum || !activeAlbum.photos?.length}
-                    >
-                      <ArrowRightIcon className="h-4 w-4" />
-                    </button>
                     {canZoom ? (
                       <>
                         <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
@@ -527,54 +509,76 @@ export default function Photography({
                   </div>
                 </div>
                 {lightboxPhoto ? (
-                  <div className="relative h-[70vh] w-full overflow-auto rounded-3xl bg-black">
-                    <div className="relative mx-auto flex h-full w-full items-center justify-center">
-                      {isVideo(lightboxPhoto) ? (
-                        <video
-                          src={lightboxPhoto.url}
-                          className="max-h-[70vh] w-full max-w-full object-contain"
-                          controls
-                          muted
-                          autoPlay
-                          playsInline
-                          preload="metadata"
-                        />
-                      ) : (
-                        <Image
-                          src={lightboxPhoto.url}
-                          alt={`${formatAlbumName(activeAlbum?.name)} full-size item`}
-                          width={1920}
-                          height={1080}
-                          sizes="100vw"
-                          unoptimized
-                          className="h-auto w-auto max-h-[70vh] max-w-full object-contain object-center"
-                          priority
-                          style={{
-                            transform: `scale(${zoomLevel})`,
-                            transformOrigin: 'center center',
-                          }}
-                          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                            setPhotoDimensions((previous) => {
-                              const existing = previous[lightboxPhoto.path]
-                              if (
-                                existing?.width === naturalWidth &&
-                                existing?.height === naturalHeight
-                              ) {
-                                return previous
-                              }
+                  <div className="flex w-full items-center justify-center gap-4">
+                    <button
+                      type="button"
+                      className="flex-shrink-0 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      onClick={() => moveLightbox(-1)}
+                      aria-label="Previous item"
+                      disabled={!activeAlbum || !activeAlbum.photos?.length}
+                    >
+                      <ArrowLeftIcon className="h-5 w-5" />
+                    </button>
+                    <div className="w-full max-w-5xl">
+                      <div className="relative h-[82vh] w-full overflow-hidden rounded-3xl bg-black">
+                        <div className="relative mx-auto flex h-full w-full cursor-pointer items-center justify-center overflow-auto">
+                          {isVideo(lightboxPhoto) ? (
+                            <video
+                              src={lightboxPhoto.url}
+                              className="h-full w-full object-contain"
+                              controls
+                              muted
+                              autoPlay
+                              playsInline
+                              preload="metadata"
+                            />
+                          ) : (
+                            <Image
+                              src={lightboxPhoto.url}
+                              alt={`${formatAlbumName(activeAlbum?.name)} full-size item`}
+                              width={1920}
+                              height={1080}
+                              sizes="(min-width: 1920px) 1280px, (min-width: 1280px) 80vw, 100vw"
+                              unoptimized
+                              className="h-full w-full cursor-pointer object-contain object-center"
+                              priority
+                              style={{
+                                transform: `scale(${zoomLevel})`,
+                                transformOrigin: 'center center',
+                              }}
+                              onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                                setPhotoDimensions((previous) => {
+                                  const existing = previous[lightboxPhoto.path]
+                                  if (
+                                    existing?.width === naturalWidth &&
+                                    existing?.height === naturalHeight
+                                  ) {
+                                    return previous
+                                  }
 
-                              return {
-                                ...previous,
-                                [lightboxPhoto.path]: {
-                                  width: naturalWidth,
-                                  height: naturalHeight,
-                                },
-                              }
-                            })
-                          }}
-                        />
-                      )}
+                                  return {
+                                    ...previous,
+                                    [lightboxPhoto.path]: {
+                                      width: naturalWidth,
+                                      height: naturalHeight,
+                                    },
+                                  }
+                                })
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
                     </div>
+                    <button
+                      type="button"
+                      className="flex-shrink-0 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      onClick={() => moveLightbox(1)}
+                      aria-label="Next item"
+                      disabled={!activeAlbum || !activeAlbum.photos?.length}
+                    >
+                      <ArrowRightIcon className="h-5 w-5" />
+                    </button>
                   </div>
                 ) : null}
               </Dialog.Panel>

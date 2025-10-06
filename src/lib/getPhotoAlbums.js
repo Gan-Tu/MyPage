@@ -24,6 +24,31 @@ const IMAGE_EXTENSIONS = new Set([
   'tiff',
 ])
 
+const THUMBNAIL_SUFFIX = '_thumbnail'
+
+function normalizePhotoFileName(fileName) {
+  if (!fileName) {
+    return { baseName: fileName, isThumbnail: false }
+  }
+
+  const lastDotIndex = fileName.lastIndexOf('.')
+  if (lastDotIndex <= 0 || lastDotIndex === fileName.length - 1) {
+    return { baseName: fileName, isThumbnail: false }
+  }
+
+  const nameWithoutExtension = fileName.slice(0, lastDotIndex)
+  const extension = fileName.slice(lastDotIndex)
+
+  if (nameWithoutExtension.endsWith(THUMBNAIL_SUFFIX)) {
+    return {
+      baseName: `${nameWithoutExtension.slice(0, -THUMBNAIL_SUFFIX.length)}${extension}`,
+      isThumbnail: true,
+    }
+  }
+
+  return { baseName: fileName, isThumbnail: false }
+}
+
 function determineMediaType(fileName, contentType) {
   if (typeof contentType === 'string') {
     if (contentType.startsWith('video/')) {
@@ -151,43 +176,140 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       continue
     }
 
+    if (segments.some((segment) => segment.toLowerCase() === '.ds_store')) {
+      continue
+    }
+
     const albumEntry =
       albums.get(albumName) || {
-        photos: [],
-        coverPhoto: null,
+        photoMap: new Map(),
+        coverPhotoKey: null,
       }
 
     const fileName = photoSegments[photoSegments.length - 1]
     const mediaType = determineMediaType(fileName, file.contentType)
+    const { baseName, isThumbnail } = normalizePhotoFileName(fileName)
 
-    const photo = {
-      name: photoSegments[photoSegments.length - 1],
-      path: file.name,
-      url: buildPublicUrl(bucketName, file.name),
-      originalUrl: buildPublicUrl(bucketName, file.name),
-      updated: file.metadata.updated || null,
-      size: file.metadata.size ? Number(file.metadata.size) : null,
-      contentType: file.metadata.contentType || null,
-      mediaType,
+    if (mediaType === 'video' || mediaType === 'unknown') {
+      const videoUrl = buildPublicUrl(bucketName, file.name)
+      const videoEntry = {
+        name: fileName,
+        path: file.name,
+        url: videoUrl,
+        originalUrl: videoUrl,
+        updated: file.metadata.updated || null,
+        size: file.metadata.size ? Number(file.metadata.size) : null,
+        contentType: file.metadata.contentType || null,
+        mediaType,
+        sortKey: file.name,
+      }
+
+      albumEntry.photoMap.set(file.name, videoEntry)
+
+      if (fileName && COVER_FILENAMES.has(fileName.toLowerCase())) {
+        albumEntry.coverPhotoKey = file.name
+      }
+
+      albums.set(albumName, albumEntry)
+      continue
     }
 
-    albumEntry.photos.push(photo)
+    const normalizedSegments = [...photoSegments]
+    if (isThumbnail) {
+      normalizedSegments[normalizedSegments.length - 1] = baseName
+    }
+
+    const baseObjectPath = [albumName, ...normalizedSegments].join('/')
+    const existingEntry = albumEntry.photoMap.get(baseObjectPath) || {
+      name: baseName,
+      path: baseObjectPath,
+      originalPath: null,
+      previewPath: null,
+      url: null,
+      originalUrl: null,
+      previewUrl: null,
+      updated: null,
+      size: null,
+      contentType: null,
+      mediaType,
+      sortKey: baseObjectPath,
+    }
+
+    if (isThumbnail) {
+      const previewUrl = buildPublicUrl(bucketName, file.name)
+      existingEntry.previewUrl = previewUrl
+      existingEntry.previewPath = file.name
+      existingEntry.url = previewUrl
+      if (!existingEntry.originalUrl) {
+        existingEntry.originalUrl = previewUrl
+      }
+      if (!existingEntry.path || existingEntry.path === baseObjectPath) {
+        existingEntry.path = existingEntry.originalPath || file.name
+      }
+      if (!existingEntry.updated && file.metadata.updated) {
+        existingEntry.updated = file.metadata.updated
+      }
+      if (!existingEntry.size && file.metadata.size) {
+        existingEntry.size = Number(file.metadata.size)
+      }
+      if (!existingEntry.contentType && file.metadata.contentType) {
+        existingEntry.contentType = file.metadata.contentType
+      }
+    } else {
+      const originalUrl = buildPublicUrl(bucketName, file.name)
+      existingEntry.name = baseName
+      existingEntry.originalPath = file.name
+      existingEntry.originalUrl = originalUrl
+      existingEntry.url = existingEntry.previewUrl || originalUrl
+      existingEntry.updated = file.metadata.updated || existingEntry.updated
+      existingEntry.size = file.metadata.size ? Number(file.metadata.size) : existingEntry.size
+      existingEntry.contentType = file.metadata.contentType || existingEntry.contentType
+      existingEntry.path = file.name
+    }
+
+    albumEntry.photoMap.set(baseObjectPath, existingEntry)
 
     if (fileName && COVER_FILENAMES.has(fileName.toLowerCase())) {
-      albumEntry.coverPhoto = photo
+      albumEntry.coverPhotoKey = baseObjectPath
     }
 
     albums.set(albumName, albumEntry)
   }
 
+  const transformPhotoEntry = (entry) => {
+    if (!entry) {
+      return null
+    }
+
+    const path = entry.originalPath || entry.previewPath || entry.path
+    const url = entry.previewUrl || entry.url || entry.originalUrl
+    const originalUrl = entry.originalUrl || entry.previewUrl || entry.url
+
+    return {
+      name: entry.name,
+      path,
+      url,
+      originalUrl,
+      updated: entry.updated || null,
+      size: entry.size || null,
+      contentType: entry.contentType || null,
+      mediaType: entry.mediaType || null,
+    }
+  }
+
   const orderedAlbums = Array.from(albums.entries()).map(([name, data]) => {
-    const sortedPhotos = [...data.photos].sort((a, b) =>
-      a.path.localeCompare(b.path, undefined, { numeric: true })
+    const photoEntries = Array.from(data.photoMap.values())
+    const normalizedPhotos = photoEntries
+      .map(transformPhotoEntry)
+      .filter(Boolean)
+
+    normalizedPhotos.sort((a, b) =>
+      (a.path || '').localeCompare(b.path || '', undefined, { numeric: true })
     )
 
     let totalMillis = 0
     let countedPhotos = 0
-    const mostRecentUpdate = sortedPhotos.reduce((latest, photo) => {
+    const mostRecentUpdate = normalizedPhotos.reduce((latest, photo) => {
       if (!photo.updated) {
         return latest
       }
@@ -203,26 +325,29 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
     const averageMillis = countedPhotos > 0 ? totalMillis / countedPhotos : null
     const averageUpdatedAt = averageMillis ? new Date(averageMillis).toISOString() : null
 
+    const coverEntry = data.coverPhotoKey ? data.photoMap.get(data.coverPhotoKey) : null
+    const coverPhotoCandidate = transformPhotoEntry(coverEntry)
+
     const coverPhoto =
-      data.coverPhoto && data.coverPhoto.mediaType === 'image'
-        ? data.coverPhoto
-        : sortedPhotos.find((item) => item.mediaType === 'image') ||
-          data.coverPhoto ||
-          sortedPhotos[0] ||
+      coverPhotoCandidate && coverPhotoCandidate.mediaType === 'image'
+        ? coverPhotoCandidate
+        : normalizedPhotos.find((item) => item.mediaType === 'image') ||
+          coverPhotoCandidate ||
+          normalizedPhotos[0] ||
           null
 
-    const imageCount = sortedPhotos.filter((item) => item.mediaType === 'image').length
-    const videoCount = sortedPhotos.filter((item) => item.mediaType === 'video').length
+    const imageCount = normalizedPhotos.filter((item) => item.mediaType === 'image').length
+    const videoCount = normalizedPhotos.filter((item) => item.mediaType === 'video').length
 
     return {
       name,
       photoCount: imageCount,
       videoCount,
-      itemCount: sortedPhotos.length,
+      itemCount: normalizedPhotos.length,
       updatedAt: mostRecentUpdate ? new Date(mostRecentUpdate).toISOString() : null,
       averageUpdatedAt,
       coverPhoto,
-      photos: sortedPhotos,
+      photos: normalizedPhotos,
     }
   })
 
