@@ -2,11 +2,25 @@ import nextMDX from '@next/mdx'
 import remarkGfm from 'remark-gfm'
 import rehypePrism from '@mapbox/rehype-prism'
 
+const photographyBucket =
+  process.env.PHOTOGRAPHY_BUCKET ||
+  process.env.NEXT_PUBLIC_PHOTOGRAPHY_BUCKET ||
+  'tugan-photos'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['jsx', 'mdx'],
   reactStrictMode: true,
-  swcMinify: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
+        pathname: `/${photographyBucket}/**`,
+      },
+    ],
+    minimumCacheTTL: 2678400,
+  },
   experimental: {
     // newNextLinkBehavior: true,
     scrollRestoration: true,

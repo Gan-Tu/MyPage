@@ -109,3 +109,6 @@ dist
 
 .env*.local
 .vercel
+
+# Google Cloud Keys
+GOOGLE_SERVICE_ACCOUNT_KEY.json
