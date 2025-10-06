@@ -149,7 +149,9 @@ export default function Photography({
 
   const canZoom = lightboxPhoto ? !isVideo(lightboxPhoto) : false
   const originalMediaUrl = lightboxPhoto?.originalUrl || lightboxPhoto?.url || null
-  const lightboxItemLabel = lightboxPhoto?.name || 'Untitled media'
+  const lightboxItemLabel = lightboxPhoto 
+    ? `${lightboxPhoto.name || 'Untitled media'}${lightboxPhoto.size ? ` (${(lightboxPhoto.size / 1024 / 1024).toFixed(1)} MB)` : ''}`
+    : 'Untitled media'
 
   const closeAlbum = () => {
     setSelectedAlbumName(null)
@@ -445,14 +447,18 @@ export default function Photography({
                     {lightboxPhoto ? (
                       <span className="text-zinc-300">
                         {originalMediaUrl ? (
-                          <a
-                            href={originalMediaUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline decoration-dotted underline-offset-4 hover:text-white"
-                          >
-                            {lightboxItemLabel} (click for original)
-                          </a>
+                          <>
+                            {lightboxItemLabel} (
+                            <a
+                              href={originalMediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline decoration-dotted underline-offset-4 hover:text-white"
+                            >
+                              View Original
+                            </a>
+                            )
+                          </>
                         ) : (
                           lightboxItemLabel
                         )}
@@ -462,7 +468,7 @@ export default function Photography({
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={() => moveLightbox(-1)}
                       aria-label="Previous item"
                       disabled={!activeAlbum || !activeAlbum.photos?.length}
@@ -471,7 +477,7 @@ export default function Photography({
                     </button>
                     <button
                       type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={() => moveLightbox(1)}
                       aria-label="Next item"
                       disabled={!activeAlbum || !activeAlbum.photos?.length}
@@ -483,7 +489,7 @@ export default function Photography({
                         <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
                         <button
                           type="button"
-                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                           onClick={zoomOut}
                           aria-label="Zoom out"
                           disabled={zoomLevel <= ZOOM_MIN}
@@ -495,7 +501,7 @@ export default function Photography({
                         </span>
                         <button
                           type="button"
-                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                           onClick={zoomIn}
                           aria-label="Zoom in"
                           disabled={zoomLevel >= ZOOM_MAX}
@@ -504,7 +510,7 @@ export default function Photography({
                         </button>
                         <Button
                           type="button"
-                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                           onClick={resetZoom}
                         >
                           Reset
@@ -513,7 +519,7 @@ export default function Photography({
                     ) : null}
                     <Button
                       type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={closeLightbox}
                     >
                       Close

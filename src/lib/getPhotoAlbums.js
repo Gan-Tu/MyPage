@@ -165,9 +165,9 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       path: file.name,
       url: buildPublicUrl(bucketName, file.name),
       originalUrl: buildPublicUrl(bucketName, file.name),
-      updated: file.updated || null,
-      size: file.size ? Number(file.size) : null,
-      contentType: file.contentType || null,
+      updated: file.metadata.updated || null,
+      size: file.metadata.size ? Number(file.metadata.size) : null,
+      contentType: file.metadata.contentType || null,
       mediaType,
     }
 
