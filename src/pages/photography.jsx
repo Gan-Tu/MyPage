@@ -215,8 +215,8 @@ export default function Photography({
         />
       </Head>
       <SimpleLayout
-        title="Moments from near and far."
-        intro="A living archive of the trips, adventures, and serendipitous scenes that I capture along the way. Every album streams directly from cloud storage so new memories appear here as soon as they’re uploaded."
+        title="Photography I took from moments near and far."
+        intro="A living archive of the adventures, and serendipitous scenes that I capture along the way."
       >
         <div className="space-y-4 -my-4">
           {summary && summary.albumCount > 0 && (
@@ -239,8 +239,7 @@ export default function Photography({
 
           {(!albums || albums.length === 0) && !error ? (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              No albums are available yet. Upload photos to the configured Google
-              Cloud Storage bucket and they will appear here automatically.
+              No albums are available yet.
             </p>
           ) : (
             <ul
