@@ -26,6 +26,122 @@ const IMAGE_EXTENSIONS = new Set([
 
 const THUMBNAIL_SUFFIX = '_thumbnail'
 
+const GLOBAL_CACHE_KEY = '__PHOTO_ALBUM_CACHE__'
+const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000
+
+function getCacheStore() {
+  const globalObject = globalThis || global
+  if (!globalObject[GLOBAL_CACHE_KEY]) {
+    globalObject[GLOBAL_CACHE_KEY] = new Map()
+  }
+  return globalObject[GLOBAL_CACHE_KEY]
+}
+
+function resolveCacheTtl() {
+  const rawValue = process.env.PHOTO_ALBUM_CACHE_TTL_MS
+  const parsedValue = rawValue ? Number(rawValue) : NaN
+  if (Number.isFinite(parsedValue) && parsedValue > 0) {
+    return parsedValue
+  }
+  return DEFAULT_CACHE_TTL_MS
+}
+
+async function loadAlbumsWithCache({ bucketName = DEFAULT_BUCKET } = {}) {
+  const cacheStore = getCacheStore()
+  const cacheKey = bucketName || DEFAULT_BUCKET
+  const existingEntry = cacheStore.get(cacheKey)
+  const now = Date.now()
+  const ttl = resolveCacheTtl()
+
+  if (existingEntry && now - existingEntry.fetchedAt < ttl) {
+    return existingEntry
+  }
+
+  const albums = await getPhotoAlbums({ bucketName })
+  const summary = getPhotoAlbumsSummary(albums)
+  const nextEntry = { albums, summary, fetchedAt: now }
+  cacheStore.set(cacheKey, nextEntry)
+  return nextEntry
+}
+
+function stripAlbumPhotos(album) {
+  if (!album) {
+    return album
+  }
+
+  const { photos, ...rest } = album
+
+  return {
+    ...rest,
+    isHydrated: false,
+  }
+}
+
+export async function getPaginatedPhotoAlbums({
+  page = 1,
+  pageSize = 9,
+  bucketName = DEFAULT_BUCKET,
+} = {}) {
+  const { albums, summary } = await loadAlbumsWithCache({ bucketName })
+
+  const totalAlbums = albums.length
+  const normalizedPageSize = (() => {
+    const numeric = Number(pageSize)
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return 9
+    }
+    return Math.min(Math.floor(numeric), 50)
+  })()
+
+  const totalPages = totalAlbums > 0 ? Math.ceil(totalAlbums / normalizedPageSize) : 0
+
+  const normalizedPage = (() => {
+    const numeric = Number(page)
+    if (!Number.isFinite(numeric) || numeric <= 0) {
+      return totalPages > 0 ? 1 : 1
+    }
+    if (totalPages === 0) {
+      return 1
+    }
+    return Math.min(Math.floor(numeric), totalPages)
+  })()
+
+  const startIndex = totalAlbums > 0 ? (normalizedPage - 1) * normalizedPageSize : 0
+  const endIndex = startIndex + normalizedPageSize
+  const pageAlbums = totalAlbums > 0 ? albums.slice(startIndex, endIndex).map(stripAlbumPhotos) : []
+
+  return {
+    albums: pageAlbums,
+    summary,
+    pagination: {
+      page: normalizedPage,
+      pageSize: normalizedPageSize,
+      totalAlbums,
+      totalPages,
+      hasMore: totalPages > 0 && normalizedPage < totalPages,
+      nextPage: totalPages > 0 && normalizedPage < totalPages ? normalizedPage + 1 : null,
+      prevPage: totalPages > 0 && normalizedPage > 1 ? normalizedPage - 1 : null,
+    },
+  }
+}
+
+export async function getPhotoAlbumDetails(albumName, { bucketName = DEFAULT_BUCKET } = {}) {
+  if (!albumName) {
+    return null
+  }
+
+  const { albums } = await loadAlbumsWithCache({ bucketName })
+  const match = albums.find((album) => album.name === albumName)
+  if (!match) {
+    return null
+  }
+
+  return {
+    ...match,
+    isHydrated: true,
+  }
+}
+
 function normalizePhotoFileName(fileName) {
   if (!fileName) {
     return { baseName: fileName, isThumbnail: false }

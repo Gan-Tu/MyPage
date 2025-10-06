@@ -9,7 +9,7 @@ const photographyBucket =
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['jsx', 'mdx'],
+  pageExtensions: ['js', 'jsx', 'mdx'],
   reactStrictMode: true,
   images: {
     remotePatterns: [

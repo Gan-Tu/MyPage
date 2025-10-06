@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
-import { getPhotoAlbums, getPhotoAlbumsSummary } from '@/lib/getPhotoAlbums'
+import { getPaginatedPhotoAlbums } from '@/lib/getPhotoAlbums'
 
 const DEFAULT_LIGHTBOX_BACKGROUND =
   ' bg-black/90 backdrop-blur-sm dark:bg-black/95 dark:backdrop-blur '
@@ -122,11 +122,34 @@ function formatMediaCounts({ photoCount = 0, videoCount = 0 }) {
 }
 
 export default function Photography({
-  albums,
-  summary,
+  initialAlbums,
+  initialSummary,
+  initialPagination,
   lastGeneratedAt,
   error,
 }) {
+  const [albums, setAlbums] = useState(() =>
+    Array.isArray(initialAlbums) ? [...initialAlbums] : []
+  )
+  const [summary, setSummary] = useState(initialSummary || null)
+  const [pagination, setPagination] = useState(() =>
+    initialPagination
+      ? { ...initialPagination }
+      : {
+          page: 1,
+          pageSize: 9,
+          totalAlbums: Array.isArray(initialAlbums) ? initialAlbums.length : 0,
+          totalPages: 0,
+          hasMore: false,
+          nextPage: null,
+          prevPage: null,
+        }
+  )
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [loadMoreError, setLoadMoreError] = useState(null)
+  const [albumDetails, setAlbumDetails] = useState({})
+  const [loadingAlbumName, setLoadingAlbumName] = useState(null)
+  const [albumDetailError, setAlbumDetailError] = useState(null)
   const [selectedAlbumName, setSelectedAlbumName] = useState(null)
   const [lightboxPhotoIndex, setLightboxPhotoIndex] = useState(null)
   const [photoDimensions, setPhotoDimensions] = useState({})
@@ -159,8 +182,78 @@ export default function Photography({
       setLightboxPhotoIndex(null)
       setZoomLevel(INITIAL_ZOOM)
       setIsDragging(false)
+      setAlbumDetailError(null)
     },
     [INITIAL_ZOOM]
+  )
+
+  const ensureAlbumDetails = useCallback(
+    async (albumName) => {
+      if (!albumName) {
+        return
+      }
+
+      const existingDetails = albumDetails[albumName]
+      if (existingDetails?.isHydrated) {
+        return
+      }
+
+      if (loadingAlbumName === albumName) {
+        return
+      }
+
+      setAlbumDetailError(null)
+      setLoadingAlbumName(albumName)
+
+      try {
+        const response = await fetch(`/api/photo-albums/${encodeURIComponent(albumName)}`)
+        if (!response.ok) {
+          const errorPayload = await response.json().catch(() => ({}))
+          const reason = errorPayload?.error || 'Unable to load the requested album.'
+          throw new Error(reason)
+        }
+
+        const payload = await response.json().catch(() => null)
+        const album = payload?.album
+
+        if (!album) {
+          throw new Error('Received an unexpected response while loading the album.')
+        }
+
+        setAlbumDetails((current) => ({
+          ...current,
+          [albumName]: album,
+        }))
+
+        const { photos: _ignoredPhotos, ...metadata } = album
+
+        setAlbums((current) => {
+          const existingIndex = current.findIndex((item) => item.name === albumName)
+
+          const nextEntry = {
+            ...metadata,
+            isHydrated: true,
+          }
+
+          if (existingIndex === -1) {
+            return [...current, nextEntry]
+          }
+
+          const next = [...current]
+          next[existingIndex] = {
+            ...next[existingIndex],
+            ...nextEntry,
+          }
+          return next
+        })
+      } catch (fetchError) {
+        const reason = fetchError?.message || 'Unable to load the requested album.'
+        setAlbumDetailError(reason)
+      } finally {
+        setLoadingAlbumName((current) => (current === albumName ? null : current))
+      }
+    },
+    [albumDetails, loadingAlbumName, setAlbumDetails, setAlbums, setAlbumDetailError, setLoadingAlbumName]
   )
 
   useEffect(() => {
@@ -179,27 +272,68 @@ export default function Photography({
       return
     }
 
-    const matchingAlbum = albums.find((album) => album.name === albumNameFromQuery)
-
-    if (!matchingAlbum) {
-      if (selectedAlbumName !== null) {
-        selectAlbum(null)
+    setAlbums((current) => {
+      if (current.some((album) => album.name === albumNameFromQuery)) {
+        return current
       }
+
+      return [
+        ...current,
+        {
+          name: albumNameFromQuery,
+          coverPhoto: null,
+          photoCount: 0,
+          videoCount: 0,
+          itemCount: 0,
+          updatedAt: null,
+          averageUpdatedAt: null,
+          isHydrated: false,
+        },
+      ]
+    })
+
+    if (albumNameFromQuery !== selectedAlbumName) {
+      selectAlbum(albumNameFromQuery)
+    }
+  }, [albumQueryParam, routerIsReady, selectAlbum, selectedAlbumName, setAlbums])
+
+  useEffect(() => {
+    if (!selectedAlbumName) {
       return
     }
 
-    if (matchingAlbum.name !== selectedAlbumName) {
-      selectAlbum(matchingAlbum.name)
-    }
-  }, [albumQueryParam, albums, routerIsReady, selectAlbum, selectedAlbumName])
+    ensureAlbumDetails(selectedAlbumName)
+  }, [selectedAlbumName, ensureAlbumDetails])
 
-  const activeAlbum = useMemo(
+  const baseActiveAlbum = useMemo(
     () => albums.find((album) => album.name === selectedAlbumName) || null,
     [albums, selectedAlbumName]
   )
 
+  const detailedAlbum = selectedAlbumName
+    ? albumDetails[selectedAlbumName] || null
+    : null
+
+  const activeAlbum = useMemo(() => {
+    if (detailedAlbum) {
+      return {
+        ...(baseActiveAlbum || { name: detailedAlbum.name }),
+        ...detailedAlbum,
+        coverPhoto: detailedAlbum.coverPhoto || baseActiveAlbum?.coverPhoto || null,
+        isHydrated: true,
+      }
+    }
+
+    return baseActiveAlbum
+  }, [baseActiveAlbum, detailedAlbum])
+
+  const activeAlbumHasPhotos = Array.isArray(activeAlbum?.photos)
+  const activeAlbumIsEmpty = activeAlbumHasPhotos && activeAlbum.photos.length === 0
+  const albumIsLoading = Boolean(selectedAlbumName) && loadingAlbumName === selectedAlbumName
+
   const lightboxPhoto =
     activeAlbum &&
+    Array.isArray(activeAlbum.photos) &&
     lightboxPhotoIndex !== null &&
     typeof lightboxPhotoIndex === 'number'
       ? activeAlbum.photos[lightboxPhotoIndex] || null
@@ -225,7 +359,7 @@ export default function Photography({
 
     const encodedAlbum = encodeURIComponent(activeAlbum.name)
     return `${router.pathname}?album=${encodedAlbum}`
-  }, [activeAlbum, router.pathname, router.asPath])
+  }, [activeAlbum, router.pathname])
 
   const shareButtonClassName = useMemo(() => {
     const baseClasses =
@@ -331,7 +465,11 @@ export default function Photography({
   }
 
   const moveLightbox = (direction) => {
-    if (!activeAlbum || lightboxPhotoIndex === null) {
+    if (
+      !activeAlbum ||
+      !Array.isArray(activeAlbum.photos) ||
+      lightboxPhotoIndex === null
+    ) {
       return
     }
 
@@ -372,6 +510,100 @@ export default function Photography({
   const resetZoom = () => {
     setZoomLevel(INITIAL_ZOOM)
   }
+
+  const handleLoadMore = useCallback(async () => {
+    if (isLoadingMore || !pagination?.hasMore) {
+      return
+    }
+
+    const currentPage = Number(pagination?.page) || 1
+    const requestedPage = pagination?.nextPage || currentPage + 1
+    const pageSize = pagination?.pageSize || 9
+
+    if (!Number.isFinite(requestedPage) || requestedPage <= currentPage) {
+      return
+    }
+
+    setIsLoadingMore(true)
+    setLoadMoreError(null)
+
+    try {
+      const response = await fetch(
+        `/api/photo-albums?page=${encodeURIComponent(requestedPage)}&pageSize=${encodeURIComponent(
+          pageSize
+        )}`
+      )
+      const payload = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        const reason = payload?.error || 'Unable to load more albums.'
+        throw new Error(reason)
+      }
+
+      if (!payload || typeof payload !== 'object') {
+        throw new Error('Received an unexpected response while loading more albums.')
+      }
+
+      if (Array.isArray(payload.albums)) {
+        setAlbums((current) => {
+          const incomingByName = new Map()
+          for (const album of payload.albums) {
+            if (album && album.name) {
+              incomingByName.set(album.name, album)
+            }
+          }
+
+          if (incomingByName.size === 0) {
+            return current
+          }
+
+          const merged = current.map((album) => {
+            const incoming = incomingByName.get(album.name)
+            if (!incoming) {
+              return album
+            }
+
+            incomingByName.delete(album.name)
+
+            if (album.isHydrated) {
+              return album
+            }
+
+            return {
+              ...album,
+              ...incoming,
+            }
+          })
+
+          if (incomingByName.size > 0) {
+            merged.push(...incomingByName.values())
+          }
+
+          return merged
+        })
+      }
+
+      if (payload.summary) {
+        setSummary(payload.summary)
+      }
+
+      if (payload.pagination) {
+        setPagination(payload.pagination)
+      } else {
+        setPagination((current) => ({
+          ...current,
+          page: requestedPage,
+          hasMore: false,
+          nextPage: null,
+        }))
+      }
+    } catch (fetchError) {
+      const reason = fetchError?.message || 'Unable to load more albums.'
+      setLoadMoreError(reason)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [isLoadingMore, pagination, setAlbums, setSummary, setPagination, setLoadMoreError, setIsLoadingMore])
 
   const isDraggable = canZoom && zoomLevel > 1
 
@@ -470,68 +702,89 @@ export default function Photography({
               No albums are available yet.
             </p>
           ) : (
-            <ul
-              role="list"
-              className="grid grid-cols-1 gap-x-10 gap-y-16 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {albums.map((album) => {
-                const countsLabel = formatMediaCounts(album)
+            <>
+              <ul
+                role="list"
+                className="grid grid-cols-1 gap-x-10 gap-y-16 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              >
+                {albums.map((album) => {
+                  const countsLabel = formatMediaCounts(album)
 
-                return (
-                  <Card as="li" key={album.name} className="h-full">
-                    <button
-                      type="button"
-                      onClick={() => openAlbum(album.name)}
-                      className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
-                      aria-label={`Open ${formatAlbumName(album.name)} album`}
-                    >
-                      {album.coverPhoto ? (
-                        isVideo(album.coverPhoto) ? (
-                          <div className="relative h-60 w-full bg-black">
-                            <video
+                  return (
+                    <Card as="li" key={album.name} className="h-full">
+                      <button
+                        type="button"
+                        onClick={() => openAlbum(album.name)}
+                        className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
+                        aria-label={`Open ${formatAlbumName(album.name)} album`}
+                      >
+                        {album.coverPhoto ? (
+                          isVideo(album.coverPhoto) ? (
+                            <div className="relative h-60 w-full bg-black">
+                              <video
+                                src={album.coverPhoto.url}
+                                className="pointer-events-none h-full w-full object-cover object-center opacity-90"
+                                muted
+                                loop
+                                autoPlay
+                                playsInline
+                                preload="metadata"
+                                aria-hidden="true"
+                              />
+                              <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                                Video
+                              </span>
+                            </div>
+                          ) : (
+                            <Image
                               src={album.coverPhoto.url}
-                              className="pointer-events-none h-full w-full object-cover object-center opacity-90"
-                              muted
-                              loop
-                              autoPlay
-                              playsInline
-                              preload="metadata"
-                              aria-hidden="true"
+                              alt={`${formatAlbumName(album.name)} cover`}
+                              width={1024}
+                              height={768}
+                              sizes="(min-width: 1024px) 480px, 100vw"
+                              loading="lazy"
+                              unoptimized
+                              className="h-60 w-full cursor-pointer object-cover object-center"
                             />
-                            <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
-                              Video
-                            </span>
-                          </div>
+                          )
                         ) : (
-                          <Image
-                            src={album.coverPhoto.url}
-                            alt={`${formatAlbumName(album.name)} cover`}
-                            width={1024}
-                            height={768}
-                            sizes="(min-width: 1024px) 480px, 100vw"
-                            loading="lazy"
-                            unoptimized
-                            className="h-60 w-full cursor-pointer object-cover object-center"
-                          />
-                        )
-                      ) : (
-                        <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
-                          No preview available
-                        </div>
-                      )}
-                    </button>
-                    <div className="pt-5">
-                      <Card.Title as="h2">{formatAlbumName(album.name)}</Card.Title>
-                      {countsLabel ? (
-                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                          {countsLabel}
-                        </p>
-                      ) : null}
-                    </div>
-                  </Card>
-                )
-              })}
-            </ul>
+                          <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
+                            No preview available
+                          </div>
+                        )}
+                      </button>
+                      <div className="pt-5">
+                        <Card.Title as="h2">{formatAlbumName(album.name)}</Card.Title>
+                        {countsLabel ? (
+                          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                            {countsLabel}
+                          </p>
+                        ) : null}
+                      </div>
+                    </Card>
+                  )
+                })}
+              </ul>
+
+              {loadMoreError && (
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50/50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-100">
+                  {loadMoreError}
+                </div>
+              )}
+
+              {pagination?.hasMore ? (
+                <div className="mt-6 flex justify-center">
+                  <Button
+                    type="button"
+                    onClick={handleLoadMore}
+                    disabled={isLoadingMore}
+                    className="cursor-pointer"
+                  >
+                    {isLoadingMore ? 'Loading...' : 'Load more albums'}
+                  </Button>
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </SimpleLayout>
@@ -647,11 +900,23 @@ export default function Photography({
                   ))}
                 </div>
 
-                {!activeAlbum?.photos?.length && (
+                {albumIsLoading ? (
+                  <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
+                    Loading album...
+                  </p>
+                ) : null}
+
+                {albumDetailError && !albumIsLoading ? (
+                  <div className="mt-6 rounded-xl border border-red-200 bg-red-50/50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-900/20 dark:text-red-100">
+                    {albumDetailError}
+                  </div>
+                ) : null}
+
+                {activeAlbumHasPhotos && activeAlbumIsEmpty && !albumIsLoading ? (
                   <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-400">
                     This album is empty for now.
                   </p>
-                )}
+                ) : null}
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -844,15 +1109,19 @@ export default function Photography({
 
 export async function getServerSideProps() {
   const lastGeneratedAt = new Date().toISOString()
+  const DEFAULT_PAGE_SIZE = 9
 
   try {
-    const albums = await getPhotoAlbums()
-    const summary = getPhotoAlbumsSummary(albums)
+    const { albums, summary, pagination } = await getPaginatedPhotoAlbums({
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+    })
 
     return {
       props: {
-        albums,
-        summary,
+        initialAlbums: albums,
+        initialSummary: summary,
+        initialPagination: pagination,
         lastGeneratedAt,
         error: null,
       },
@@ -860,8 +1129,17 @@ export async function getServerSideProps() {
   } catch (fetchError) {
     return {
       props: {
-        albums: [],
-        summary: { albumCount: 0, photoCount: 0, videoCount: 0, itemCount: 0 },
+        initialAlbums: [],
+        initialSummary: { albumCount: 0, photoCount: 0, videoCount: 0, itemCount: 0 },
+        initialPagination: {
+          page: 1,
+          pageSize: DEFAULT_PAGE_SIZE,
+          totalAlbums: 0,
+          totalPages: 0,
+          hasMore: false,
+          nextPage: null,
+          prevPage: null,
+        },
         lastGeneratedAt,
         error:
           fetchError?.message ||
