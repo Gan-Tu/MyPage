@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
@@ -92,6 +92,33 @@ function formatTimestamp(value) {
   }
 }
 
+function isVideo(media) {
+  if (!media) {
+    return false
+  }
+
+  if (media.mediaType) {
+    return media.mediaType === 'video'
+  }
+
+  const contentType = media.contentType
+  return typeof contentType === 'string' && contentType.startsWith('video/')
+}
+
+function formatMediaCounts({ photoCount = 0, videoCount = 0 }) {
+  const parts = []
+
+  if (photoCount > 0) {
+    parts.push(`${photoCount} photo${photoCount === 1 ? '' : 's'}`)
+  }
+
+  if (videoCount > 0) {
+    parts.push(`${videoCount} video${videoCount === 1 ? '' : 's'}`)
+  }
+
+  return parts.join(' • ')
+}
+
 export default function Photography({
   albums,
   summary,
@@ -119,6 +146,10 @@ export default function Photography({
     typeof lightboxPhotoIndex === 'number'
       ? activeAlbum.photos[lightboxPhotoIndex] || null
       : null
+
+  const canZoom = lightboxPhoto ? !isVideo(lightboxPhoto) : false
+  const originalMediaUrl = lightboxPhoto?.originalUrl || lightboxPhoto?.url || null
+  const lightboxItemLabel = lightboxPhoto?.name || 'Untitled media'
 
   const closeAlbum = () => {
     setSelectedAlbumName(null)
@@ -179,32 +210,6 @@ export default function Photography({
     setZoomLevel(INITIAL_ZOOM)
   }
 
-  useEffect(() => {
-    if (!lightboxPhoto) {
-      return
-    }
-
-    const dimensions = photoDimensions[lightboxPhoto.path]
-    if (!dimensions) {
-      return
-    }
-
-    const aspectRatio = dimensions.width / dimensions.height
-    let targetZoom = INITIAL_ZOOM
-
-    if (aspectRatio < 0.85) {
-      targetZoom = 1.5
-    } else if (aspectRatio < 1) {
-      targetZoom = 1.35
-    }
-
-    const clampedZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, targetZoom))
-
-    setZoomLevel((current) =>
-      Math.abs(current - clampedZoom) < 0.01 ? current : clampedZoom
-    )
-  }, [lightboxPhoto, photoDimensions])
-
   return (
     <>
       <Head>
@@ -222,9 +227,10 @@ export default function Photography({
           {summary && summary.albumCount > 0 && (
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               Showing {summary.albumCount} album{summary.albumCount === 1 ? '' : 's'}
-              {summary.photoCount > 0
-                ? ` • Total ${summary.photoCount} photo${summary.photoCount === 1 ? '' : 's'}`
-                : ''}
+              {(() => {
+                const countsLabel = formatMediaCounts(summary)
+                return countsLabel ? ` • ${countsLabel}` : ''
+              })()}
             </p>
           )}
 
@@ -248,18 +254,38 @@ export default function Photography({
                   <button
                     type="button"
                     onClick={() => openAlbum(album.name)}
-                    className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
+                    className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
                     aria-label={`Open ${formatAlbumName(album.name)} album`}
                   >
                     {album.coverPhoto ? (
-                      <Image
-                        src={album.coverPhoto.url}
-                        alt={`${formatAlbumName(album.name)} cover`}
-                        width={1024}
-                        height={768}
-                        sizes="(min-width: 1024px) 480px, 100vw"
-                        className="h-60 w-full cursor-pointer object-cover object-center"
-                      />
+                      isVideo(album.coverPhoto) ? (
+                        <div className="relative h-60 w-full bg-black">
+                          <video
+                            src={album.coverPhoto.url}
+                            className="pointer-events-none h-full w-full object-cover object-center opacity-90"
+                            muted
+                            loop
+                            autoPlay
+                            playsInline
+                            preload="metadata"
+                            aria-hidden="true"
+                          />
+                          <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                            Video
+                          </span>
+                        </div>
+                      ) : (
+                        <Image
+                          src={album.coverPhoto.url}
+                          alt={`${formatAlbumName(album.name)} cover`}
+                          width={1024}
+                          height={768}
+                          sizes="(min-width: 1024px) 480px, 100vw"
+                          loading="lazy"
+                          unoptimized
+                          className="h-60 w-full cursor-pointer object-cover object-center"
+                        />
+                      )
                     ) : (
                       <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
                         No preview available
@@ -268,7 +294,12 @@ export default function Photography({
                   </button>
                   <div className="pt-5">
                     <Card.Title as="h2">{formatAlbumName(album.name)}
-                      <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400"> • {album.photoCount} photo{album.photoCount === 1 ? '' : 's'}</span>
+                      {(() => {
+                        const countsLabel = formatMediaCounts(album)
+                        return countsLabel ? (
+                          <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400"> • {countsLabel}</span>
+                        ) : null
+                      })()}
                     </Card.Title>
                   </div>
                 </Card>
@@ -313,38 +344,59 @@ export default function Photography({
                         Last updated {formatTimestamp(activeAlbum.updatedAt)}
                       </p>
                     )}
-                    {activeAlbum?.photoCount ? (
-                      <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                        {activeAlbum.photoCount} photo{activeAlbum.photoCount === 1 ? '' : 's'}
-                      </p>
-                    ) : null}
+                    {(() => {
+                      const countsLabel = activeAlbum ? formatMediaCounts(activeAlbum) : ''
+                      return countsLabel ? (
+                        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">{countsLabel}</p>
+                      ) : null
+                    })()}
                   </div>
                   <Button
                     type="button"
                     variant="secondary"
                     onClick={closeAlbum}
-                    className="self-start cursor-pointer border border-black/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:border-white/40"
+                    className="self-start cursor-pointer border border-black/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:border-white/40"
                   >
                     Close
                   </Button>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                   {activeAlbum?.photos?.map((photo, index) => (
                     <button
                       type="button"
                       key={photo.path}
                       onClick={() => openPhoto(index)}
-                      className="group relative cursor-pointer overflow-hidden rounded-xl bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
+                      className="group relative cursor-pointer overflow-hidden rounded-xl bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
+                      aria-label={`Open ${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
                     >
-                      <Image
-                        src={photo.url}
-                        alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
-                        width={640}
-                        height={640}
-                        className="h-36 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105"
-                        sizes="(min-width: 1024px) 240px, 50vw"
-                      />
+                      {isVideo(photo) ? (
+                        <div className="relative h-52 sm:h-36 w-full">
+                          <video
+                            src={photo.url}
+                            className="pointer-events-none h-full w-full object-cover object-center opacity-90 transition duration-200 group-hover:opacity-100"
+                            muted
+                            loop
+                            autoPlay
+                            playsInline
+                            preload="metadata"
+                            aria-hidden="true"
+                          />
+                          <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                            Video
+                          </span>
+                        </div>
+                      ) : (
+                        <Image
+                          src={photo.url}
+                          alt={`${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
+                          width={640}
+                          height={640}
+                          className="h-52 sm:h-36 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105"
+                          loading="lazy"
+                          sizes="(min-width: 1024px) 240px, 50vw"
+                        />
+                      )}
                     </button>
                   ))}
                 </div>
@@ -390,9 +442,20 @@ export default function Photography({
                     <span className="font-medium text-zinc-100">
                       {formatAlbumName(activeAlbum?.name)}
                     </span>
-                    {lightboxPhoto?.name ? (
+                    {lightboxPhoto ? (
                       <span className="text-zinc-300">
-                        {lightboxPhoto.name}
+                        {originalMediaUrl ? (
+                          <a
+                            href={originalMediaUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline decoration-dotted underline-offset-4 hover:text-white"
+                          >
+                            {lightboxItemLabel} (click for original)
+                          </a>
+                        ) : (
+                          lightboxItemLabel
+                        )}
                       </span>
                     ) : null}
                   </div>
@@ -401,7 +464,7 @@ export default function Photography({
                       type="button"
                       className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={() => moveLightbox(-1)}
-                      aria-label="Previous photo"
+                      aria-label="Previous item"
                       disabled={!activeAlbum || !activeAlbum.photos?.length}
                     >
                       <ArrowLeftIcon className="h-4 w-4" />
@@ -410,43 +473,47 @@ export default function Photography({
                       type="button"
                       className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={() => moveLightbox(1)}
-                      aria-label="Next photo"
+                      aria-label="Next item"
                       disabled={!activeAlbum || !activeAlbum.photos?.length}
                     >
                       <ArrowRightIcon className="h-4 w-4" />
                     </button>
-                    <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
-                    <button
+                    {canZoom ? (
+                      <>
+                        <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
+                        <button
+                          type="button"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          onClick={zoomOut}
+                          aria-label="Zoom out"
+                          disabled={zoomLevel <= ZOOM_MIN}
+                        >
+                          <MinusIcon className="h-4 w-4" />
+                        </button>
+                        <span className="w-14 text-center text-xs font-medium text-zinc-300">
+                          {Math.round(zoomLevel * 100)}%
+                        </span>
+                        <button
+                          type="button"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          onClick={zoomIn}
+                          aria-label="Zoom in"
+                          disabled={zoomLevel >= ZOOM_MAX}
+                        >
+                          <PlusIcon className="h-4 w-4" />
+                        </button>
+                        <Button
+                          type="button"
+                          className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                          onClick={resetZoom}
+                        >
+                          Reset
+                        </Button>
+                      </>
+                    ) : null}
+                    <Button
                       type="button"
                       className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={zoomOut}
-                      aria-label="Zoom out"
-                      disabled={zoomLevel <= ZOOM_MIN}
-                    >
-                      <MinusIcon className="h-4 w-4" />
-                    </button>
-                    <span className="w-14 text-center text-xs font-medium text-zinc-300">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <button
-                      type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={zoomIn}
-                      aria-label="Zoom in"
-                      disabled={zoomLevel >= ZOOM_MAX}
-                    >
-                      <PlusIcon className="h-4 w-4" />
-                    </button>
-                    <Button
-                      type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={resetZoom}
-                    >
-                      Reset
-                    </Button>
-                    <Button
-                      type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={closeLightbox}
                     >
                       Close
@@ -456,38 +523,51 @@ export default function Photography({
                 {lightboxPhoto ? (
                   <div className="relative h-[70vh] w-full overflow-auto rounded-3xl bg-black">
                     <div className="relative mx-auto flex h-full w-full items-center justify-center">
-                      <Image
-                        src={lightboxPhoto.url}
-                        alt={`${formatAlbumName(activeAlbum?.name)} full-size photo`}
-                        width={1920}
-                        height={1080}
-                        sizes="100vw"
-                        className="h-auto w-auto max-h-[70vh] max-w-full object-contain object-center"
-                        priority
-                        style={{
-                          transform: `scale(${zoomLevel})`,
-                          transformOrigin: 'center center',
-                        }}
-                        onLoadingComplete={({ naturalWidth, naturalHeight }) => {
-                          setPhotoDimensions((previous) => {
-                            const existing = previous[lightboxPhoto.path]
-                            if (
-                              existing?.width === naturalWidth &&
-                              existing?.height === naturalHeight
-                            ) {
-                              return previous
-                            }
+                      {isVideo(lightboxPhoto) ? (
+                        <video
+                          src={lightboxPhoto.url}
+                          className="max-h-[70vh] w-full max-w-full object-contain"
+                          controls
+                          muted
+                          autoPlay
+                          playsInline
+                          preload="metadata"
+                        />
+                      ) : (
+                        <Image
+                          src={lightboxPhoto.url}
+                          alt={`${formatAlbumName(activeAlbum?.name)} full-size item`}
+                          width={1920}
+                          height={1080}
+                          sizes="100vw"
+                          unoptimized
+                          className="h-auto w-auto max-h-[70vh] max-w-full object-contain object-center"
+                          priority
+                          style={{
+                            transform: `scale(${zoomLevel})`,
+                            transformOrigin: 'center center',
+                          }}
+                          onLoadingComplete={({ naturalWidth, naturalHeight }) => {
+                            setPhotoDimensions((previous) => {
+                              const existing = previous[lightboxPhoto.path]
+                              if (
+                                existing?.width === naturalWidth &&
+                                existing?.height === naturalHeight
+                              ) {
+                                return previous
+                              }
 
-                            return {
-                              ...previous,
-                              [lightboxPhoto.path]: {
-                                width: naturalWidth,
-                                height: naturalHeight,
-                              },
-                            }
-                          })
-                        }}
-                      />
+                              return {
+                                ...previous,
+                                [lightboxPhoto.path]: {
+                                  width: naturalWidth,
+                                  height: naturalHeight,
+                                },
+                              }
+                            })
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
                 ) : null}
@@ -519,7 +599,7 @@ export async function getServerSideProps() {
     return {
       props: {
         albums: [],
-        summary: { albumCount: 0, photoCount: 0 },
+        summary: { albumCount: 0, photoCount: 0, videoCount: 0, itemCount: 0 },
         lastGeneratedAt,
         error:
           fetchError?.message ||

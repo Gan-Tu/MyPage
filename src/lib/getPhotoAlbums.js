@@ -9,6 +9,51 @@ const COVER_FILENAMES = new Set([
   'album-cover.png',
 ])
 
+const VIDEO_EXTENSIONS = new Set(['mp4', 'mov', 'm4v', 'webm', 'avi'])
+const IMAGE_EXTENSIONS = new Set([
+  'jpg',
+  'jpeg',
+  'png',
+  'gif',
+  'avif',
+  'webp',
+  'bmp',
+  'heic',
+  'heif',
+  'tif',
+  'tiff',
+])
+
+function determineMediaType(fileName, contentType) {
+  if (typeof contentType === 'string') {
+    if (contentType.startsWith('video/')) {
+      return 'video'
+    }
+    if (contentType.startsWith('image/')) {
+      return 'image'
+    }
+  }
+
+  if (!fileName) {
+    return 'unknown'
+  }
+
+  const lastDotIndex = fileName.lastIndexOf('.')
+  if (lastDotIndex === -1 || lastDotIndex === fileName.length - 1) {
+    return 'unknown'
+  }
+
+  const extension = fileName.slice(lastDotIndex + 1).toLowerCase()
+  if (VIDEO_EXTENSIONS.has(extension)) {
+    return 'video'
+  }
+  if (IMAGE_EXTENSIONS.has(extension)) {
+    return 'image'
+  }
+
+  return 'unknown'
+}
+
 let storageClientPromise
 
 function decodeServiceAccountKey(rawKey) {
@@ -43,11 +88,10 @@ function decodeServiceAccountKey(rawKey) {
 async function getStorageClient() {
   if (!storageClientPromise) {
     storageClientPromise = import('@google-cloud/storage').then(({ Storage }) => {
-      const credentials = decodeServiceAccountKey(
-        process.env.GCP_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+      const credentials = decodeServiceAccountKey(process.env.GOOGLE_SERVICE_ACCOUNT_KEY
       )
 
-      const projectId = process.env.GCP_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT
+      const projectId = process.env.GOOGLE_CLOUD_PROJECT
 
       return new Storage({
         projectId: projectId || undefined,
@@ -114,13 +158,17 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       }
 
     const fileName = photoSegments[photoSegments.length - 1]
+    const mediaType = determineMediaType(fileName, file.contentType)
+
     const photo = {
       name: photoSegments[photoSegments.length - 1],
       path: file.name,
       url: buildPublicUrl(bucketName, file.name),
+      originalUrl: buildPublicUrl(bucketName, file.name),
       updated: file.updated || null,
       size: file.size ? Number(file.size) : null,
       contentType: file.contentType || null,
+      mediaType,
     }
 
     albumEntry.photos.push(photo)
@@ -155,12 +203,25 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
     const averageMillis = countedPhotos > 0 ? totalMillis / countedPhotos : null
     const averageUpdatedAt = averageMillis ? new Date(averageMillis).toISOString() : null
 
+    const coverPhoto =
+      data.coverPhoto && data.coverPhoto.mediaType === 'image'
+        ? data.coverPhoto
+        : sortedPhotos.find((item) => item.mediaType === 'image') ||
+          data.coverPhoto ||
+          sortedPhotos[0] ||
+          null
+
+    const imageCount = sortedPhotos.filter((item) => item.mediaType === 'image').length
+    const videoCount = sortedPhotos.filter((item) => item.mediaType === 'video').length
+
     return {
       name,
-      photoCount: sortedPhotos.length,
+      photoCount: imageCount,
+      videoCount,
+      itemCount: sortedPhotos.length,
       updatedAt: mostRecentUpdate ? new Date(mostRecentUpdate).toISOString() : null,
       averageUpdatedAt,
-      coverPhoto: data.coverPhoto || sortedPhotos[0] || null,
+      coverPhoto,
       photos: sortedPhotos,
     }
   })
@@ -200,15 +261,17 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
 
 export function getPhotoAlbumsSummary(albums) {
   if (!Array.isArray(albums)) {
-    return { albumCount: 0, photoCount: 0 }
+    return { albumCount: 0, photoCount: 0, videoCount: 0, itemCount: 0 }
   }
 
   return albums.reduce(
     (acc, album) => {
       acc.albumCount += 1
       acc.photoCount += album.photoCount || 0
+      acc.videoCount += album.videoCount || 0
+      acc.itemCount += album.itemCount || album.photos?.length || 0
       return acc
     },
-    { albumCount: 0, photoCount: 0 }
+    { albumCount: 0, photoCount: 0, videoCount: 0, itemCount: 0 }
   )
 }
