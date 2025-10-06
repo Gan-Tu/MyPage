@@ -227,6 +227,24 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
   })
 
   orderedAlbums.sort((a, b) => {
+    // Extract year from album name (YYYY format)
+    const aYearMatch = a.name.match(/\b(\d{4})\b/)
+    const bYearMatch = b.name.match(/\b(\d{4})\b/)
+    const aYear = aYearMatch ? parseInt(aYearMatch[1], 10) : null
+    const bYear = bYearMatch ? parseInt(bYearMatch[1], 10) : null
+
+    // Sort by year first (descending - most recent first)
+    if (aYear !== null && bYear !== null) {
+      return bYear - aYear
+    }
+    if (aYear !== null) {
+      return -1
+    }
+    if (bYear !== null) {
+      return 1
+    }
+
+    // Fallback to average updated time
     const aTime = a.averageUpdatedAt ? new Date(a.averageUpdatedAt).getTime() : null
     const bTime = b.averageUpdatedAt ? new Date(b.averageUpdatedAt).getTime() : null
 
@@ -240,6 +258,7 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       return 1
     }
 
+    // Fallback to latest updated time
     const aLatest = a.updatedAt ? new Date(a.updatedAt).getTime() : null
     const bLatest = b.updatedAt ? new Date(b.updatedAt).getTime() : null
 
@@ -253,6 +272,7 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       return 1
     }
 
+    // Final fallback to name comparison
     return a.name.localeCompare(b.name, undefined, { numeric: true })
   })
 
