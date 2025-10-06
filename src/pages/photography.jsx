@@ -1,7 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { useRouter } from 'next/router'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
@@ -119,92 +121,6 @@ function formatMediaCounts({ photoCount = 0, videoCount = 0 }) {
   return parts.join(' • ')
 }
 
-function AlbumCardTitle({ album }) {
-  const nameRef = useRef(null)
-  const countsRef = useRef(null)
-  const [isWrapped, setIsWrapped] = useState(false)
-
-  const countsLabel = useMemo(
-    () => formatMediaCounts(album),
-    [album.photoCount, album.videoCount]
-  )
-
-  useEffect(() => {
-    if (!countsLabel) {
-      setIsWrapped(false)
-      return
-    }
-
-    const nameElement = nameRef.current
-    const countsElement = countsRef.current
-    if (!nameElement || !countsElement) {
-      return
-    }
-
-    const updateWrapState = () => {
-      if (!nameRef.current || !countsRef.current) {
-        setIsWrapped(false)
-        return
-      }
-
-      const nameTop = nameRef.current.offsetTop
-      const countsTop = countsRef.current.offsetTop
-      setIsWrapped((previous) => {
-        const next = countsTop > nameTop
-        return previous === next ? previous : next
-      })
-    }
-
-    updateWrapState()
-
-    let resizeObserver = null
-    if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(updateWrapState)
-      resizeObserver.observe(nameElement)
-      resizeObserver.observe(countsElement)
-    }
-
-    const handleWindowResize = () => {
-      updateWrapState()
-    }
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', handleWindowResize)
-    }
-
-    return () => {
-      resizeObserver?.disconnect()
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleWindowResize)
-      }
-    }
-  }, [album.name, countsLabel])
-
-  return (
-    <Card.Title
-      as="h2"
-      className="flex flex-wrap items-baseline gap-x-2 gap-y-1"
-    >
-      <span ref={nameRef} className="min-w-0">
-        {formatAlbumName(album.name)}
-      </span>
-      {countsLabel ? (
-        <span
-          ref={countsRef}
-          className="flex items-center whitespace-nowrap text-sm font-normal text-zinc-500 dark:text-zinc-400"
-        >
-          {!isWrapped && (
-            <span aria-hidden="true" className="mr-1 inline-block">
-              •
-            </span>
-          )}
-          {countsLabel}
-        </span>
-      ) : null}
-    </Card.Title>
-  )
-}
-
 export default function Photography({
   albums,
   summary,
@@ -221,6 +137,7 @@ export default function Photography({
   const ZOOM_STEP = 0.25
   const [zoomLevel, setZoomLevel] = useState(INITIAL_ZOOM)
   const [isDragging, setIsDragging] = useState(false)
+  const [shareCopyStatus, setShareCopyStatus] = useState('idle')
   const scrollContainerRef = useRef(null)
   const dragStateRef = useRef({
     active: false,
@@ -230,6 +147,51 @@ export default function Photography({
     scrollLeft: 0,
     scrollTop: 0,
   })
+  const shareCopyTimeoutRef = useRef(null)
+
+  const router = useRouter()
+  const routerIsReady = router?.isReady
+  const albumQueryParam = router?.query?.album
+
+  const selectAlbum = useCallback(
+    (albumName) => {
+      setSelectedAlbumName(albumName)
+      setLightboxPhotoIndex(null)
+      setZoomLevel(INITIAL_ZOOM)
+      setIsDragging(false)
+    },
+    [INITIAL_ZOOM]
+  )
+
+  useEffect(() => {
+    if (!routerIsReady) {
+      return
+    }
+
+    const albumNameFromQuery = Array.isArray(albumQueryParam)
+      ? albumQueryParam[0]
+      : albumQueryParam
+
+    if (!albumNameFromQuery) {
+      if (selectedAlbumName !== null) {
+        selectAlbum(null)
+      }
+      return
+    }
+
+    const matchingAlbum = albums.find((album) => album.name === albumNameFromQuery)
+
+    if (!matchingAlbum) {
+      if (selectedAlbumName !== null) {
+        selectAlbum(null)
+      }
+      return
+    }
+
+    if (matchingAlbum.name !== selectedAlbumName) {
+      selectAlbum(matchingAlbum.name)
+    }
+  }, [albumQueryParam, albums, routerIsReady, selectAlbum, selectedAlbumName])
 
   const activeAlbum = useMemo(
     () => albums.find((album) => album.name === selectedAlbumName) || null,
@@ -250,16 +212,117 @@ export default function Photography({
     ? `${lightboxPhoto.name || 'Untitled media'}${lightboxPhoto.size ? ` (${(lightboxPhoto.size / 1024 / 1024).toFixed(1)} MB)` : ''}`
     : 'Untitled media'
 
+  const shareUrl = useMemo(() => {
+    if (!activeAlbum) {
+      return ''
+    }
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href)
+      url.searchParams.set('album', activeAlbum.name)
+      return url.toString()
+    }
+
+    const encodedAlbum = encodeURIComponent(activeAlbum.name)
+    return `${router.pathname}?album=${encodedAlbum}`
+  }, [activeAlbum, router.pathname, router.asPath])
+
+  const shareButtonClassName = useMemo(() => {
+    const baseClasses =
+      'inline-flex items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 cursor-pointer';
+
+    if (shareCopyStatus === 'copied') {
+      return `${baseClasses} border-teal-600 bg-teal-600 text-white hover:bg-teal-500 dark:border-teal-300 dark:bg-teal-300 dark:text-zinc-900 dark:hover:bg-teal-200`
+    }
+
+    if (shareCopyStatus === 'error') {
+      return `${baseClasses} border-red-600 bg-red-600 text-white hover:bg-red-500 dark:border-red-400 dark:bg-red-400 dark:text-zinc-900 dark:hover:bg-red-300`
+    }
+
+    return `${baseClasses} border-black/70 bg-black text-white hover:bg-zinc-900 dark:border-white/70 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100`
+  }, [shareCopyStatus])
+
+  const shareButtonLabel =
+    shareCopyStatus === 'copied'
+      ? 'Copied!'
+      : shareCopyStatus === 'error'
+      ? 'Copy failed'
+      : 'Share'
+
+  const handleShareLinkClick = async () => {
+    if (!shareUrl) {
+      return
+    }
+
+    if (shareCopyTimeoutRef.current) {
+      clearTimeout(shareCopyTimeoutRef.current)
+      shareCopyTimeoutRef.current = null
+    }
+
+    let nextStatus = 'idle'
+
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+        nextStatus = 'copied'
+      } else {
+        throw new Error('Clipboard unavailable')
+      }
+    } catch (copyError) {
+      nextStatus = 'error'
+    }
+
+    if (nextStatus !== 'idle') {
+      setShareCopyStatus(nextStatus)
+    }
+
+    if (typeof window !== 'undefined') {
+      shareCopyTimeoutRef.current = window.setTimeout(() => {
+        setShareCopyStatus('idle')
+        shareCopyTimeoutRef.current = null
+      }, nextStatus === 'error' ? 4000 : 2200)
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (shareCopyTimeoutRef.current) {
+        clearTimeout(shareCopyTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (shareCopyTimeoutRef.current) {
+      clearTimeout(shareCopyTimeoutRef.current)
+      shareCopyTimeoutRef.current = null
+    }
+    setShareCopyStatus('idle')
+  }, [activeAlbum?.name])
+
   const closeAlbum = () => {
-    setSelectedAlbumName(null)
-    setLightboxPhotoIndex(null)
-    setZoomLevel(INITIAL_ZOOM)
+    selectAlbum(null)
+
+    if (router?.isReady) {
+      const { album: _removed, ...restQuery } = router.query
+      router.replace(
+        { pathname: router.pathname, query: restQuery },
+        undefined,
+        { shallow: true, scroll: false }
+      )
+    }
   }
 
   const openAlbum = (albumName) => {
-    setSelectedAlbumName(albumName)
-    setLightboxPhotoIndex(null)
-    setZoomLevel(INITIAL_ZOOM)
+    selectAlbum(albumName)
+
+    if (router?.isReady) {
+      router.replace(
+        { pathname: router.pathname, query: { ...router.query, album: albumName } },
+        undefined,
+        { shallow: true, scroll: false }
+      )
+    }
   }
 
   const openPhoto = (index) => {
@@ -411,54 +474,63 @@ export default function Photography({
               role="list"
               className="grid grid-cols-1 gap-x-10 gap-y-16 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
             >
-              {albums.map((album) => (
-                <Card as="li" key={album.name} className="h-full">
-                  <button
-                    type="button"
-                    onClick={() => openAlbum(album.name)}
-                    className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
-                    aria-label={`Open ${formatAlbumName(album.name)} album`}
-                  >
-                    {album.coverPhoto ? (
-                      isVideo(album.coverPhoto) ? (
-                        <div className="relative h-60 w-full bg-black">
-                          <video
+              {albums.map((album) => {
+                const countsLabel = formatMediaCounts(album)
+
+                return (
+                  <Card as="li" key={album.name} className="h-full">
+                    <button
+                      type="button"
+                      onClick={() => openAlbum(album.name)}
+                      className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
+                      aria-label={`Open ${formatAlbumName(album.name)} album`}
+                    >
+                      {album.coverPhoto ? (
+                        isVideo(album.coverPhoto) ? (
+                          <div className="relative h-60 w-full bg-black">
+                            <video
+                              src={album.coverPhoto.url}
+                              className="pointer-events-none h-full w-full object-cover object-center opacity-90"
+                              muted
+                              loop
+                              autoPlay
+                              playsInline
+                              preload="metadata"
+                              aria-hidden="true"
+                            />
+                            <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
+                              Video
+                            </span>
+                          </div>
+                        ) : (
+                          <Image
                             src={album.coverPhoto.url}
-                            className="pointer-events-none h-full w-full object-cover object-center opacity-90"
-                            muted
-                            loop
-                            autoPlay
-                            playsInline
-                            preload="metadata"
-                            aria-hidden="true"
+                            alt={`${formatAlbumName(album.name)} cover`}
+                            width={1024}
+                            height={768}
+                            sizes="(min-width: 1024px) 480px, 100vw"
+                            loading="lazy"
+                            unoptimized
+                            className="h-60 w-full cursor-pointer object-cover object-center"
                           />
-                          <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
-                            Video
-                          </span>
-                        </div>
+                        )
                       ) : (
-                        <Image
-                          src={album.coverPhoto.url}
-                          alt={`${formatAlbumName(album.name)} cover`}
-                          width={1024}
-                          height={768}
-                          sizes="(min-width: 1024px) 480px, 100vw"
-                          loading="lazy"
-                          unoptimized
-                          className="h-60 w-full cursor-pointer object-cover object-center"
-                        />
-                      )
-                    ) : (
-                      <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
-                        No preview available
-                      </div>
-                    )}
-                  </button>
-                  <div className="pt-5">
-                    <AlbumCardTitle album={album} />
-                  </div>
-                </Card>
-              ))}
+                        <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
+                          No preview available
+                        </div>
+                      )}
+                    </button>
+                    <div className="pt-5">
+                      <Card.Title as="h2">{formatAlbumName(album.name)}</Card.Title>
+                      {countsLabel ? (
+                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                          {countsLabel}
+                        </p>
+                      ) : null}
+                    </div>
+                  </Card>
+                )
+              })}
             </ul>
           )}
         </div>
@@ -506,14 +578,33 @@ export default function Photography({
                       ) : null
                     })()}
                   </div>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    onClick={closeAlbum}
-                    className="self-start cursor-pointer border border-black/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:border-white/40"
-                  >
-                    Close
-                  </Button>
+                  <div className="flex w-full max-w-sm flex-col items-end gap-2 sm:w-auto">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {shareUrl ? (
+                        <button
+                          type="button"
+                          onClick={handleShareLinkClick}
+                          className={shareButtonClassName}
+                          title="Copy album link"
+                        >
+                          {shareButtonLabel}
+                        </button>
+                      ) : null}
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={closeAlbum}
+                        className="cursor-pointer border border-black/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:border-white/40"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                    {shareCopyStatus === 'error' ? (
+                      <span className="text-xs text-red-500 dark:text-red-300">
+                        Copying failed. Try again or copy manually.
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
