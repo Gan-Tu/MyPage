@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { Fragment, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
@@ -117,6 +117,92 @@ function formatMediaCounts({ photoCount = 0, videoCount = 0 }) {
   }
 
   return parts.join(' • ')
+}
+
+function AlbumCardTitle({ album }) {
+  const nameRef = useRef(null)
+  const countsRef = useRef(null)
+  const [isWrapped, setIsWrapped] = useState(false)
+
+  const countsLabel = useMemo(
+    () => formatMediaCounts(album),
+    [album.photoCount, album.videoCount]
+  )
+
+  useEffect(() => {
+    if (!countsLabel) {
+      setIsWrapped(false)
+      return
+    }
+
+    const nameElement = nameRef.current
+    const countsElement = countsRef.current
+    if (!nameElement || !countsElement) {
+      return
+    }
+
+    const updateWrapState = () => {
+      if (!nameRef.current || !countsRef.current) {
+        setIsWrapped(false)
+        return
+      }
+
+      const nameTop = nameRef.current.offsetTop
+      const countsTop = countsRef.current.offsetTop
+      setIsWrapped((previous) => {
+        const next = countsTop > nameTop
+        return previous === next ? previous : next
+      })
+    }
+
+    updateWrapState()
+
+    let resizeObserver = null
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(updateWrapState)
+      resizeObserver.observe(nameElement)
+      resizeObserver.observe(countsElement)
+    }
+
+    const handleWindowResize = () => {
+      updateWrapState()
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleWindowResize)
+    }
+
+    return () => {
+      resizeObserver?.disconnect()
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleWindowResize)
+      }
+    }
+  }, [album.name, countsLabel])
+
+  return (
+    <Card.Title
+      as="h2"
+      className="flex flex-wrap items-baseline gap-x-2 gap-y-1"
+    >
+      <span ref={nameRef} className="min-w-0">
+        {formatAlbumName(album.name)}
+      </span>
+      {countsLabel ? (
+        <span
+          ref={countsRef}
+          className="flex items-center whitespace-nowrap text-sm font-normal text-zinc-500 dark:text-zinc-400"
+        >
+          {!isWrapped && (
+            <span aria-hidden="true" className="mr-1 inline-block">
+              •
+            </span>
+          )}
+          {countsLabel}
+        </span>
+      ) : null}
+    </Card.Title>
+  )
 }
 
 export default function Photography({
@@ -296,8 +382,8 @@ export default function Photography({
         />
       </Head>
       <SimpleLayout
-        title="Photography I took from moments near and far."
-        intro="A living archive of the adventures, and serendipitous scenes that I capture along the way."
+        title="Moments I took from near and far on my Canon R5 & iPhone."
+        intro="Where wild horizons meet wandering souls—a visual diary of untamed landscapes, fleeting wildlife encounters, and the raw beauty discovered in the spaces between destinations."
       >
         <div className="space-y-4 -my-4">
           {summary && summary.albumCount > 0 && (
@@ -369,14 +455,7 @@ export default function Photography({
                     )}
                   </button>
                   <div className="pt-5">
-                    <Card.Title as="h2">{formatAlbumName(album.name)}
-                      {(() => {
-                        const countsLabel = formatMediaCounts(album)
-                        return countsLabel ? (
-                          <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400"> • {countsLabel}</span>
-                        ) : null
-                      })()}
-                    </Card.Title>
+                    <AlbumCardTitle album={album} />
                   </div>
                 </Card>
               ))}
