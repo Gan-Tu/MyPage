@@ -327,12 +327,7 @@ export default function Home({ articles }) {
             Software developer, travel enthusiasts and professional dreamer.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m Gan, a software developer, graphic designer and entrepreneur
-            based in Los Angeles and New York City. I enjoy developing aesthetic
-            and useful technologies for fun and geeky endeavors. I am currently
-            focused in the space of AI and AR. It's also a life goal of mine to
-            help bring to life and witness the birth of General Artificial
-            Intelligence in my lifetime.
+          I’m Gan — a software developer, designer, and entrepreneur based in California. I love creating technologies that blend utility with beauty, building tools that are both deeply functional and a joy to use. Right now, my focus is in AI and entertainment design, where art and engineering intersect. My lifelong goal is to help bring General Artificial Intelligence to life — and to witness its birth within my lifetime.
           </p>
           <div className="mt-6 flex gap-6">
             <SocialLink

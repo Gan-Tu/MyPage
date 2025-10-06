@@ -1,45 +1,27 @@
-import AudioPlayer from './AudioPlayer'
-
 function ShortBlurbBiography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-      <div className="py-2">
+      {/* <div className="py-2">
         <AudioPlayer
           title="Listen to this, in my AI voice clone!"
           src="https://s3.amazonaws.com/tugan/public/audio/mypage-intro.mp3"
         />
-      </div>
+      </div> */}
 
       <p>
-        I love traveling internationally. It's a magical feeling to be on the
-        road, hopping between tourist attractions and destinations, touring new
-        cities and places, people-watching while sitting in front of a coffee
-        shop window near a busy street. It creates wonderful memories, giving
-        each year something to look back on and remember. It also brings
-        something exciting to look forward to each year. Even the process of
-        making travel plans is exciting, despite the headache it takes to prep
-        for visas and itineraries. I put a pin on the map for each place I have
-        visited, and I print all my travel photos out in a photo album. It's a
-        rewarding experience to see maps getting fuller and fuller with little
-        travel pins, and the photo albums getting filled up. It's my life's
-        journeys and experiences recorded in snapshots. So far, I have been to
-        all seven continents and both polar regions, where I found my passion
-        for wildlife photography as well.
+        I love traveling internationally. There's something magical about being on the road — hopping between cities, wandering through landmarks, and people-watching from a café window on a busy street. Every trip leaves behind memories that make each year feel richer and more colorful. Even the logistics — visas, itineraries, endless checklists — feel worthwhile because the anticipation is part of the adventure.
       </p>
 
       <p>
-        I also enjoy learning new things and skills. It keeps me intellectually
-        stimulated and engaged. The feeling of mastering and learning something
-        new is gratifying, and it helps grow my passion and diversify my
-        hobbies. I like adventures as well. I am an Advanced PADI-certified
-        scuba diver, and I am working towards becoming a Scuba Master. It gives
-        me the opportunity to explore amazingly unique places under the water. I
-        am also studying to become a recreational pilot, as well as getting
-        licensed for skydiving. This gives me the freedom to explore the sky,
-        with the ability to experience extreme thrills and fun. I used to ski,
-        but now I have started learning snowboarding. I still fall a lot, but
-        with more lessons and practice, I look forward to the days where I can
-        comfortably enjoy and traverse the beautiful snowy mountains.
+        I keep a map covered in travel pins and photo albums filled with printed memories. Watching both of them fill up over time is deeply rewarding — a visual record of my life's journeys. So far, I've been to all seven continents and both polar regions, where I also discovered my passion for wildlife photography.
+      </p>
+
+      <p>
+        Beyond travel, I love learning new things. Mastering new skills keeps me curious, grounded, and inspired. I'm an Advanced PADI-certified scuba diver currently working toward becoming a Scuba Master, exploring the hidden beauty of the underwater world. I'm also training to become a recreational pilot and getting licensed for skydiving — chasing both freedom and adrenaline in the skies.
+      </p>
+
+      <p>
+        I used to ski, but lately I've switched to snowboarding. I still fall more often than I'd like, but every lesson gets me a little closer to carving down those mountains with ease. For me, every skill, every journey, is a new way to explore — the world, and myself.
       </p>
     </div>
   )

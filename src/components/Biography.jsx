@@ -1,80 +1,34 @@
-import AudioPlayer from './AudioPlayer'
-
 function Biography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-      <div className="py-2">
+      {/* <div className="py-2">
         <AudioPlayer
           title="Listen to this, in my AI voice clone!"
           src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography.mp3"
         />
-      </div>
+      </div> */}
       <p>
-        Some people know me as a technical geek, while others know me as a
-        passionate graphic designer. In my view, a beautiful design not only
-        makes your products shine and appear ultra-high quality but also makes
-        it incredibly satisfying to use. Thus, I consider my artistic talents
-        really make me stand out from the classic Silicon Valley techie
-        stereotypes.
+        Some people know me as a technical geek, others as a passionate designer. I see no reason to choose between the two. To me, great design doesn't just make something look beautiful — it makes every interaction feel effortless and satisfying. That sense of aesthetic craftsmanship is what I think sets me apart from the classic Silicon Valley stereotype.
       </p>
 
       <p>
-        When I was small, I didn't know what I wanted to do, like many other
-        kids. In my junior year when I applied for college, I applied to many
-        architecture programs under the career influence of my dad. In fact, 18
-        out of 20 degrees were in architecture. However, once I got into some
-        prestigious programs with scholarships and even put down a student
-        enrollment deposit, I decided to drop architecture and switch to
-        business and finance because architecture is not really a fitting career
-        for staying and working in the USA.
+        When I was younger, I had no idea what I wanted to do — pretty common story. During college applications, under my dad's influence, I applied almost entirely to architecture programs — 18 out of 20, to be exact. After receiving multiple offers (with scholarships, even paying deposits), I realized architecture wasn't quite the right fit for the kind of life I wanted in the U.S., so I pivoted to business and finance.
       </p>
 
       <p>
-        At the time, I switched to a business and finance degree, thinking I was
-        going to become either a consultant or an investment banker. I would
-        participate in consulting and investment banking competitions.
-        Nevertheless, I am not a person who likes to wait when I have
-        intellectual cravings for learning. I began taking online business
-        specialization programs from schools like Wharton and Harvard Business
-        School. By the time I was a sophomore, I had taken an astonishing 1000+
-        hours of online courses in various subjects and obtained 13+
-        specializations. That made the undergraduate business degree boring and
-        redundant for me, so I switched once again to a computer science major.
+        At first, I imagined myself becoming a consultant or investment banker. I joined case competitions, finance clubs, and studied late for interviews. But I've never been the kind of person who waits around for a curriculum to catch up with my curiosity. While classmates were reading textbooks, I was taking online programs from Wharton and Harvard Business School — over 1,000 hours of content and 13 specializations by my sophomore year. By then, my degree felt repetitive. So, I switched majors again — this time, to computer science.
       </p>
 
       <p>
-        This time, I fell in love. Different from my childhood experience
-        learning competition-oriented programming classes in China, the schools
-        actually made computer science fun and really enjoyable. Coupled with
-        amazing professors from Stanford and Berkeley, I focused on CS full time
-        and even finished all the graduate classes I wanted to take. What's
-        really cool is I am really good. Yes, I have no shame but am proud in
-        stating that I am really good at programming. In school, I also met some
-        amazingly talented classmates in AI and ML as a part of the leadership
-        team for Machine Learning at Berkeley, and that's where and how I got
-        most of my AI knowledge and experience.
+        And that's where everything clicked. Unlike my earlier experiences with competitive programming back in China, this version of CS was fun — creative, logical, and full of possibility. With professors from Stanford and Berkeley shaping my thinking, I went all in, finishing the advanced graduate courses I wanted. And yes, I'll say it outright: I'm really good at programming, and I'm proud of that. During that time, I also joined Machine Learning at Berkeley's leadership team, where I learned from some of the sharpest minds in AI.
       </p>
 
       <p>
-        To satisfy my intellectual endeavors, I spent my first college summer in
-        Europe doing an entrepreneurship accelerator program. For my second
-        summer, I attended an art school and learned graphic design, product
-        design, transportation design, and 3D designs. It was three months of
-        intensive drawing. For my last summer, I spent a whole year doing a
-        co-op at Apple working on Siri and AI. Once I was back at school to
-        finish my degree, I also audited various courses in Law School,
-        including but not limited to Contract Law, Constitutional Law, Business
-        Law - Negligence and Torts, and Criminal Law. As you can see, I really
-        like to learn new things.
+        Curiosity has always been my north star. My first college summer was in Europe for an entrepreneurship accelerator. The next was at an art school, diving deep into graphic, product, and 3D design — three months of pure creative flow. For my final summer, I spent a year at Apple working on Siri and AI. When I returned to campus, I even audited classes at the law school — everything from Contract Law to Constitutional Law. I guess I just really like connecting dots across disciplines.
       </p>
 
       <p>
-        Besides work, I love traveling. I have solo traveled to all 7
-        continents, 34 countries and counting. It's my goal to travel to a
-        different country each year, and I am gratful for having the time and
-        means to make those memories. I am also a recreational scuba diver,
-        working on my pilot's license, and trying to get better at both skiing
-        and snowboarding. Oh, I am also an amateur magician 🎩 .
+        Outside of work, I travel — a lot. I've solo-traveled to all seven continents and 35 countries (and counting). My goal is one new country every year. I'm a recreational scuba diver, currently training for my pilot's license, and constantly trying to improve my skiing and snowboarding. Oh, and I'm also an amateur magician 🎩 — because life's more fun with a little mystery.
       </p>
     </div>
   )
