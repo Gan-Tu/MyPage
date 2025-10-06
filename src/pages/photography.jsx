@@ -437,7 +437,7 @@ export default function Photography({
                   </Button>
                 </div>
 
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                   {activeAlbum?.photos?.map((photo, index) => (
                     <button
                       type="button"
@@ -447,7 +447,7 @@ export default function Photography({
                       aria-label={`Open ${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
                     >
                       {isVideo(photo) ? (
-                        <div className="relative h-52 sm:h-36 w-full">
+                        <div className="relative h-52 w-full sm:h-36">
                           <video
                             src={photo.url}
                             className="pointer-events-none h-full w-full object-cover object-center opacity-90 transition duration-200 group-hover:opacity-100"
@@ -468,7 +468,7 @@ export default function Photography({
                           alt={`${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
                           width={640}
                           height={640}
-                          className="h-52 sm:h-36 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105"
+                          className="h-52 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105 sm:h-36"
                           loading="lazy"
                           sizes="(min-width: 1024px) 240px, 50vw"
                         />
@@ -502,7 +502,7 @@ export default function Photography({
             <div className={`fixed inset-0${DEFAULT_LIGHTBOX_BACKGROUND}`} />
           </Transition.Child>
 
-          <div className="fixed inset-0 flex items-center justify-center p-4">
+          <div className="fixed inset-0 flex items-center justify-center p-2 sm:p-4">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-200"
@@ -512,10 +512,10 @@ export default function Photography({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative flex w-full max-w-7xl flex-col gap-6 text-zinc-100">
-                <div className="mx-auto flex w-full max-w-5xl flex-wrap items-start justify-between gap-3 text-sm">
+              <Dialog.Panel className="relative flex w-full max-w-7xl flex-col items-center gap-4 text-zinc-100">
+                <div className="flex w-full max-w-5xl flex-col items-center gap-3 px-1 text-center text-sm sm:flex-row sm:items-start sm:justify-between sm:px-0 sm:text-left">
                   <div className="flex flex-col gap-1 text-xs sm:text-sm">
-                    <span className="font-medium text-zinc-100">
+                    <span className="text-base font-semibold text-zinc-100 sm:text-lg">
                       {formatAlbumName(activeAlbum?.name)}
                     </span>
                     {lightboxPhoto ? (
@@ -539,7 +539,7 @@ export default function Photography({
                       </span>
                     ) : null}
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="flex flex-wrap items-center justify-center gap-2">
                     {canZoom ? (
                       <>
                         <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
@@ -583,18 +583,27 @@ export default function Photography({
                   </div>
                 </div>
                 {lightboxPhoto ? (
-                  <div className="flex w-full items-center justify-center gap-4">
-                    <button
-                      type="button"
-                      className="flex-shrink-0 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={() => moveLightbox(-1)}
-                      aria-label="Previous item"
-                      disabled={!activeAlbum || !activeAlbum.photos?.length}
-                    >
-                      <ArrowLeftIcon className="h-5 w-5" />
-                    </button>
-                    <div className="w-full max-w-5xl">
-                      <div className="relative h-[82vh] w-full overflow-hidden rounded-3xl bg-black">
+                  <div className="w-full">
+                    <div className="relative mx-auto h-[82vh] w-full max-w-5xl">
+                      <button
+                        type="button"
+                        className="absolute left-3 top-1/2 z-20 -translate-y-1/2 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40 md:-left-16"
+                        onClick={() => moveLightbox(-1)}
+                        aria-label="Previous item"
+                        disabled={!activeAlbum || !activeAlbum.photos?.length}
+                      >
+                        <ArrowLeftIcon className="h-5 w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 z-20 -translate-y-1/2 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40 md:-right-16"
+                        onClick={() => moveLightbox(1)}
+                        aria-label="Next item"
+                        disabled={!activeAlbum || !activeAlbum.photos?.length}
+                      >
+                        <ArrowRightIcon className="h-5 w-5" />
+                      </button>
+                      <div className="h-full w-full overflow-hidden rounded-none bg-black sm:rounded-3xl">
                         <div
                           ref={scrollContainerRef}
                           className={`relative mx-auto flex h-full w-full items-center justify-center overflow-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] ${scrollCursorClass}`}
@@ -652,15 +661,6 @@ export default function Photography({
                         </div>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      className="flex-shrink-0 cursor-pointer rounded-full border border-white/30 bg-zinc-900/70 p-3 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
-                      onClick={() => moveLightbox(1)}
-                      aria-label="Next item"
-                      disabled={!activeAlbum || !activeAlbum.photos?.length}
-                    >
-                      <ArrowRightIcon className="h-5 w-5" />
-                    </button>
                   </div>
                 ) : null}
               </Dialog.Panel>
