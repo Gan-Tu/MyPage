@@ -172,6 +172,7 @@ export default function Photography({
   })
   const shareCopyTimeoutRef = useRef(null)
   const loadMoreTriggerRef = useRef(null)
+  const pendingAlbumQueryRef = useRef(null)
 
   const router = useRouter()
   const routerIsReady = router?.isReady
@@ -267,10 +268,17 @@ export default function Photography({
       : albumQueryParam
 
     if (!albumNameFromQuery) {
+      if (pendingAlbumQueryRef.current) {
+        return
+      }
       if (selectedAlbumName !== null) {
         selectAlbum(null)
       }
       return
+    }
+
+    if (pendingAlbumQueryRef.current) {
+      pendingAlbumQueryRef.current = null
     }
 
     setAlbums((current) => {
@@ -437,6 +445,7 @@ export default function Photography({
 
   const closeAlbum = () => {
     selectAlbum(null)
+    pendingAlbumQueryRef.current = null
 
     if (router?.isReady) {
       const { album: _removed, ...restQuery } = router.query
@@ -449,6 +458,7 @@ export default function Photography({
   }
 
   const openAlbum = (albumName) => {
+    pendingAlbumQueryRef.current = albumName
     selectAlbum(albumName)
 
     if (router?.isReady) {

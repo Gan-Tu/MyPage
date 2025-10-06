@@ -2,15 +2,15 @@
 <rss version="2.0">
     <channel>
         <title>Gan Tu</title>
-        <link>https://tugan.io</link>
+        <link>https://tugan.me</link>
         <description>Your blog description</description>
-        <lastBuildDate>Sun, 05 Oct 2025 20:52:47 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 06 Oct 2025 07:24:35 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <image>
             <title>Gan Tu</title>
-            <url>https://tugan.io/favicon.ico</url>
-            <link>https://tugan.io</link>
+            <url>https://tugan.me/favicon.ico</url>
+            <link>https://tugan.me</link>
         </image>
         <copyright>All rights reserved 2025</copyright>
     </channel>

@@ -1,10 +1,10 @@
 {
     "version": "https://jsonfeed.org/version/1",
     "title": "Gan Tu",
-    "home_page_url": "https://tugan.io",
-    "feed_url": "https://tugan.io/rss/feed.json",
+    "home_page_url": "https://tugan.me",
+    "feed_url": "https://tugan.me/rss/feed.json",
     "description": "Your blog description",
-    "icon": "https://tugan.io/favicon.ico",
+    "icon": "https://tugan.me/favicon.ico",
     "author": {
         "name": "Gan Tu"
     },
