@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { Fragment, useMemo, useState } from 'react'
+import { Fragment, useMemo, useRef, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
@@ -134,6 +134,16 @@ export default function Photography({
   const ZOOM_MAX = 3
   const ZOOM_STEP = 0.25
   const [zoomLevel, setZoomLevel] = useState(INITIAL_ZOOM)
+  const [isDragging, setIsDragging] = useState(false)
+  const scrollContainerRef = useRef(null)
+  const dragStateRef = useRef({
+    active: false,
+    pointerId: null,
+    originX: 0,
+    originY: 0,
+    scrollLeft: 0,
+    scrollTop: 0,
+  })
 
   const activeAlbum = useMemo(
     () => albums.find((album) => album.name === selectedAlbumName) || null,
@@ -149,6 +159,7 @@ export default function Photography({
 
   const canZoom = lightboxPhoto ? !isVideo(lightboxPhoto) : false
   const originalMediaUrl = lightboxPhoto?.originalUrl || lightboxPhoto?.url || null
+  const displayMediaUrl = originalMediaUrl || lightboxPhoto?.url || null
   const lightboxItemLabel = lightboxPhoto 
     ? `${lightboxPhoto.name || 'Untitled media'}${lightboxPhoto.size ? ` (${(lightboxPhoto.size / 1024 / 1024).toFixed(1)} MB)` : ''}`
     : 'Untitled media'
@@ -194,6 +205,7 @@ export default function Photography({
   const closeLightbox = () => {
     setLightboxPhotoIndex(null)
     setZoomLevel(INITIAL_ZOOM)
+    setIsDragging(false)
   }
 
   const zoomIn = () => {
@@ -211,6 +223,68 @@ export default function Photography({
   const resetZoom = () => {
     setZoomLevel(INITIAL_ZOOM)
   }
+
+  const isDraggable = canZoom && zoomLevel > 1
+
+  const handlePointerDown = (event) => {
+    if (!isDraggable || !scrollContainerRef.current) {
+      return
+    }
+
+    const container = scrollContainerRef.current
+    dragStateRef.current = {
+      active: true,
+      pointerId: event.pointerId,
+      originX: event.clientX,
+      originY: event.clientY,
+      scrollLeft: container.scrollLeft,
+      scrollTop: container.scrollTop,
+    }
+
+    container.setPointerCapture?.(event.pointerId)
+    setIsDragging(true)
+    event.preventDefault()
+  }
+
+  const handlePointerMove = (event) => {
+    const dragState = dragStateRef.current
+    if (!dragState.active || !scrollContainerRef.current) {
+      return
+    }
+
+    const container = scrollContainerRef.current
+    const deltaX = event.clientX - dragState.originX
+    const deltaY = event.clientY - dragState.originY
+    container.scrollLeft = dragState.scrollLeft - deltaX
+    container.scrollTop = dragState.scrollTop - deltaY
+  }
+
+  const endDrag = (event) => {
+    const dragState = dragStateRef.current
+    if (!dragState.active || !scrollContainerRef.current) {
+      return
+    }
+
+    const container = scrollContainerRef.current
+    if (event?.pointerId !== undefined && container.hasPointerCapture?.(event.pointerId)) {
+      container.releasePointerCapture(event.pointerId)
+    }
+    dragStateRef.current = {
+      active: false,
+      pointerId: null,
+      originX: 0,
+      originY: 0,
+      scrollLeft: 0,
+      scrollTop: 0,
+    }
+    setIsDragging(false)
+  }
+
+  const scrollCursorClass = isDraggable
+    ? isDragging
+      ? 'cursor-grabbing'
+      : 'cursor-grab'
+    : 'cursor-pointer'
 
   return (
     <>
@@ -495,7 +569,7 @@ export default function Photography({
                           className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                           onClick={resetZoom}
                         >
-                          Reset
+                          Fit
                         </Button>
                       </>
                     ) : null}
@@ -521,10 +595,18 @@ export default function Photography({
                     </button>
                     <div className="w-full max-w-5xl">
                       <div className="relative h-[82vh] w-full overflow-hidden rounded-3xl bg-black">
-                        <div className="relative mx-auto flex h-full w-full cursor-pointer items-center justify-center overflow-auto">
+                        <div
+                          ref={scrollContainerRef}
+                          className={`relative mx-auto flex h-full w-full items-center justify-center overflow-auto [&::-webkit-scrollbar]:hidden [scrollbar-width:none] ${scrollCursorClass}`}
+                          onPointerDown={handlePointerDown}
+                          onPointerMove={handlePointerMove}
+                          onPointerUp={endDrag}
+                          onPointerLeave={endDrag}
+                          onPointerCancel={endDrag}
+                        >
                           {isVideo(lightboxPhoto) ? (
                             <video
-                              src={lightboxPhoto.url}
+                              src={displayMediaUrl || ''}
                               className="h-full w-full object-contain"
                               controls
                               muted
@@ -534,7 +616,7 @@ export default function Photography({
                             />
                           ) : (
                             <Image
-                              src={lightboxPhoto.url}
+                              src={displayMediaUrl || lightboxPhoto.url}
                               alt={`${formatAlbumName(activeAlbum?.name)} full-size item`}
                               width={1920}
                               height={1080}
