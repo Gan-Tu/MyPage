@@ -223,10 +223,7 @@ export default function Photography({
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               Showing {summary.albumCount} album{summary.albumCount === 1 ? '' : 's'}
               {summary.photoCount > 0
-                ? ` • ${summary.photoCount} photo${summary.photoCount === 1 ? '' : 's'}`
-                : ''}
-              {lastGeneratedAt
-                ? ` • Last synced ${formatTimestamp(lastGeneratedAt)}`
+                ? ` • Total ${summary.photoCount} photo${summary.photoCount === 1 ? '' : 's'}`
                 : ''}
             </p>
           )}
@@ -270,13 +267,9 @@ export default function Photography({
                     )}
                   </button>
                   <div className="pt-5">
-                    <Card.Title as="h2">{formatAlbumName(album.name)}</Card.Title>
-                    <Card.Description className="mt-1">
-                      {album.photoCount} photo{album.photoCount === 1 ? '' : 's'}
-                      {album.updatedAt
-                        ? ` • Updated ${formatTimestamp(album.updatedAt)}`
-                        : ''}
-                    </Card.Description>
+                    <Card.Title as="h2">{formatAlbumName(album.name)}
+                      <span className="text-sm font-normal text-zinc-500 dark:text-zinc-400"> • {album.photoCount} photo{album.photoCount === 1 ? '' : 's'}</span>
+                    </Card.Title>
                   </div>
                 </Card>
               ))}
@@ -393,7 +386,16 @@ export default function Photography({
             >
               <Dialog.Panel className="relative flex w-full max-w-6xl flex-col gap-4 text-zinc-100">
                 <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                  <span>{formatAlbumName(activeAlbum?.name)}</span>
+                  <div className="flex flex-col gap-1 text-xs sm:text-sm">
+                    <span className="font-medium text-zinc-100">
+                      {formatAlbumName(activeAlbum?.name)}
+                    </span>
+                    {lightboxPhoto?.name ? (
+                      <span className="text-zinc-300">
+                        {lightboxPhoto.name}
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <button
                       type="button"
@@ -428,7 +430,7 @@ export default function Photography({
                     </span>
                     <button
                       type="button"
-                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={zoomIn}
                       aria-label="Zoom in"
                       disabled={zoomLevel >= ZOOM_MAX}
@@ -437,16 +439,14 @@ export default function Photography({
                     </button>
                     <Button
                       type="button"
-                      variant="secondary"
-                      className="cursor-pointer bg-zinc-900/80 text-zinc-100 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={resetZoom}
                     >
                       Reset
                     </Button>
                     <Button
                       type="button"
-                      variant="secondary"
-                      className="cursor-pointer border border-black/60 bg-zinc-900/80 text-zinc-100 hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:border-white/40"
+                      className="cursor-pointer rounded-full border border-white/40 bg-zinc-900/80 p-2 text-zinc-100 shadow-lg shadow-black/30 transition hover:bg-zinc-900 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-teal-500 disabled:cursor-not-allowed disabled:opacity-40"
                       onClick={closeLightbox}
                     >
                       Close

@@ -118,8 +118,9 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       name: photoSegments[photoSegments.length - 1],
       path: file.name,
       url: buildPublicUrl(bucketName, file.name),
-      updated: file.metadata?.updated || null,
-      size: file.metadata?.size ? Number(file.metadata.size) : null,
+      updated: file.updated || null,
+      size: file.size ? Number(file.size) : null,
+      contentType: file.contentType || null,
     }
 
     albumEntry.photos.push(photo)
@@ -135,6 +136,9 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
     const sortedPhotos = [...data.photos].sort((a, b) =>
       a.path.localeCompare(b.path, undefined, { numeric: true })
     )
+
+    let totalMillis = 0
+    let countedPhotos = 0
     const mostRecentUpdate = sortedPhotos.reduce((latest, photo) => {
       if (!photo.updated) {
         return latest
@@ -143,28 +147,51 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
       if (!Number.isFinite(time)) {
         return latest
       }
+      totalMillis += time
+      countedPhotos += 1
       return Math.max(latest, time)
     }, 0)
+
+    const averageMillis = countedPhotos > 0 ? totalMillis / countedPhotos : null
+    const averageUpdatedAt = averageMillis ? new Date(averageMillis).toISOString() : null
 
     return {
       name,
       photoCount: sortedPhotos.length,
       updatedAt: mostRecentUpdate ? new Date(mostRecentUpdate).toISOString() : null,
+      averageUpdatedAt,
       coverPhoto: data.coverPhoto || sortedPhotos[0] || null,
       photos: sortedPhotos,
     }
   })
 
   orderedAlbums.sort((a, b) => {
-    if (a.updatedAt && b.updatedAt) {
-      return new Date(b.updatedAt) - new Date(a.updatedAt)
+    const aTime = a.averageUpdatedAt ? new Date(a.averageUpdatedAt).getTime() : null
+    const bTime = b.averageUpdatedAt ? new Date(b.averageUpdatedAt).getTime() : null
+
+    if (Number.isFinite(aTime) && Number.isFinite(bTime)) {
+      return bTime - aTime
     }
-    if (a.updatedAt) {
+    if (Number.isFinite(aTime)) {
       return -1
     }
-    if (b.updatedAt) {
+    if (Number.isFinite(bTime)) {
       return 1
     }
+
+    const aLatest = a.updatedAt ? new Date(a.updatedAt).getTime() : null
+    const bLatest = b.updatedAt ? new Date(b.updatedAt).getTime() : null
+
+    if (Number.isFinite(aLatest) && Number.isFinite(bLatest)) {
+      return bLatest - aLatest
+    }
+    if (Number.isFinite(aLatest)) {
+      return -1
+    }
+    if (Number.isFinite(bLatest)) {
+      return 1
+    }
+
     return a.name.localeCompare(b.name, undefined, { numeric: true })
   })
 
