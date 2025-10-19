@@ -136,14 +136,14 @@ export default function Photography({
     initialPagination
       ? { ...initialPagination }
       : {
-          page: 1,
-          pageSize: 9,
-          totalAlbums: Array.isArray(initialAlbums) ? initialAlbums.length : 0,
-          totalPages: 0,
-          hasMore: false,
-          nextPage: null,
-          prevPage: null,
-        }
+        page: 1,
+        pageSize: 9,
+        totalAlbums: Array.isArray(initialAlbums) ? initialAlbums.length : 0,
+        totalPages: 0,
+        hasMore: false,
+        nextPage: null,
+        prevPage: null,
+      }
   )
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [loadMoreError, setLoadMoreError] = useState(null)
@@ -342,9 +342,9 @@ export default function Photography({
 
   const lightboxPhoto =
     activeAlbum &&
-    Array.isArray(activeAlbum.photos) &&
-    lightboxPhotoIndex !== null &&
-    typeof lightboxPhotoIndex === 'number'
+      Array.isArray(activeAlbum.photos) &&
+      lightboxPhotoIndex !== null &&
+      typeof lightboxPhotoIndex === 'number'
       ? activeAlbum.photos[lightboxPhotoIndex] || null
       : null
 
@@ -352,7 +352,7 @@ export default function Photography({
   // Use absolute URL only for hyperlinks; render media from relative URL
   const originalMediaUrl = lightboxPhoto?.originalUrl || null
   const displayMediaUrl = lightboxPhoto?.url || null
-  const lightboxItemLabel = lightboxPhoto 
+  const lightboxItemLabel = lightboxPhoto
     ? `${lightboxPhoto.name || 'Untitled media'}${lightboxPhoto.size ? ` (${(lightboxPhoto.size / 1024 / 1024).toFixed(1)} MB)` : ''}`
     : 'Untitled media'
 
@@ -390,8 +390,8 @@ export default function Photography({
     shareCopyStatus === 'copied'
       ? 'Copied!'
       : shareCopyStatus === 'error'
-      ? 'Copy failed'
-      : 'Share'
+        ? 'Copy failed'
+        : 'Share'
 
   const handleShareLinkClick = async () => {
     if (!shareUrl) {
@@ -762,15 +762,17 @@ export default function Photography({
                         {album.coverPhoto ? (
                           isVideo(album.coverPhoto) ? (
                             <div className="relative h-60 w-full bg-black">
-                              <Image
-                                src={`${album.coverPhoto.url}/ik-thumbnail.jpg`}
+                              <video
+                                src={album.coverPhoto.originalUrl}
                                 alt={`${formatAlbumName(album.name)} cover`}
                                 width={1024}
                                 height={768}
-                                sizes="(min-width: 1024px) 480px, 100vw"
-                                loading="lazy"
-                                unoptimized
                                 className="pointer-events-none h-full w-full object-cover object-center opacity-90"
+                                preload="metadata"
+                                muted
+                                playsInline
+                                autoPlay
+                                loop
                               />
                               <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                                 Video
@@ -908,18 +910,31 @@ export default function Photography({
                       key={photo.path}
                       onClick={() => openPhoto(index)}
                       className="group relative cursor-pointer overflow-hidden rounded-xl bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
-                      aria-label={`Open ${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
+                      aria-label={`Open ${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
                     >
                       {isVideo(photo) ? (
                         <div className="relative h-52 w-full sm:h-36">
-                          <Image
-                            src={`${photo.url}/ik-thumbnail.jpg`}
-                            alt={`${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
+                          {/* <Image
+                            // src={`${photo.url}/ik-thumbnail.jpg`}
+                            src={photo.originalUrl}
+                            alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
                             width={640}
                             height={640}
                             className="pointer-events-none h-full w-full object-cover object-center opacity-90 transition duration-200 group-hover:opacity-100"
                             loading="lazy"
                             sizes="(min-width: 1024px) 240px, 50vw"
+                          /> */}
+                          <video
+                            src={photo.originalUrl}
+                            alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
+                            width={1024}
+                            height={768}
+                            className="pointer-events-none h-full w-full object-cover object-center opacity-90"
+                            preload="metadata"
+                            muted
+                            playsInline
+                            autoPlay
+                            loop
                           />
                           <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                             Video
@@ -928,7 +943,7 @@ export default function Photography({
                       ) : (
                         <Image
                           src={photo.url}
-                          alt={`${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
+                          alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
                           width={640}
                           height={640}
                           className="h-52 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105 sm:h-36"
@@ -1089,8 +1104,8 @@ export default function Photography({
                           onPointerCancel={endDrag}
                         >
                           {isVideo(lightboxPhoto) ? (
-                            <Video
-                              src={displayMediaUrl || ''}
+                            <video
+                              src={originalMediaUrl}
                               className="h-full w-full object-contain"
                               controls
                               muted

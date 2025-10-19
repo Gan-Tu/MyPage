@@ -244,10 +244,10 @@ async function getStorageClient() {
 }
 
 function buildPublicUrl(bucketName, objectName) {
-  const encodedPath = objectName
-    .split('/')
-    .map((segment) => encodeURIComponent(segment))
-    .join('/')
+  const encodedPath = objectName;
+    // .split('/')
+    // .map((segment) => encodeURIComponent(segment))
+    // .join('/')
   return `https://storage.googleapis.com/${bucketName}/${encodedPath}`
 }
 
