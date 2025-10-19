@@ -466,6 +466,17 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
           normalizedPhotos[0] ||
           null
 
+    // Ensure the cover photo appears first in the album's photo order.
+    if (coverPhoto && Array.isArray(normalizedPhotos) && normalizedPhotos.length > 0) {
+      const coverIndex = normalizedPhotos.findIndex(
+        (item) => item && coverPhoto && item.path === coverPhoto.path
+      )
+      if (coverIndex > 0) {
+        const [cover] = normalizedPhotos.splice(coverIndex, 1)
+        normalizedPhotos.unshift(cover)
+      }
+    }
+
     const imageCount = normalizedPhotos.filter((item) => item.mediaType === 'image').length
     const videoCount = normalizedPhotos.filter((item) => item.mediaType === 'video').length
 
