@@ -759,6 +759,7 @@ export default function Photography({
                         className="relative w-full cursor-pointer overflow-hidden rounded-2xl bg-zinc-100 shadow-sm shadow-zinc-900/5 transition-transform hover:scale-[1.01] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
                         aria-label={`Open ${formatAlbumName(album.name)} album`}
                       >
+                        {/* Alubm Covers */}
                         {album.coverPhoto ? (
                           isVideo(album.coverPhoto) ? (
                             <div className="relative h-60 w-full bg-black">
@@ -782,8 +783,9 @@ export default function Photography({
                             <Image
                               src={album.coverPhoto.url}
                               alt={`${formatAlbumName(album.name)} cover`}
-                              width={1024}
-                              height={768}
+                              width={440}
+                              height={280}
+                              transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.3" }]}
                               sizes="(min-width: 1024px) 480px, 100vw"
                               loading="lazy"
                               unoptimized
@@ -911,7 +913,8 @@ export default function Photography({
                       onClick={() => openPhoto(index)}
                       className="group relative cursor-pointer overflow-hidden rounded-xl bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-500 dark:bg-zinc-800"
                       aria-label={`Open ${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
-                    >
+                    > 
+                      {/* Photo Thumbnails */}
                       {isVideo(photo) ? (
                         <div className="relative h-52 w-full sm:h-36">
                           {/* <Image
@@ -944,8 +947,9 @@ export default function Photography({
                         <Image
                           src={photo.url}
                           alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
-                          width={640}
-                          height={640}
+                          width={440}
+                          height={280}
+                          transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.3" }]}
                           className="h-52 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105 sm:h-36"
                           loading="lazy"
                           sizes="(min-width: 1024px) 240px, 50vw"
@@ -1158,7 +1162,7 @@ export default function Photography({
           </div>
         </Dialog>
       </Transition.Root>
-    </ImageKitProvider>
+    </ImageKitProvider >
   )
 }
 
