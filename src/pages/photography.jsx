@@ -785,7 +785,7 @@ export default function Photography({
                               alt={`${formatAlbumName(album.name)} cover`}
                               width={440}
                               height={280}
-                              transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.3" }]}
+                              transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.1" }]}
                               sizes="(min-width: 1024px) 480px, 100vw"
                               loading="lazy"
                               unoptimized
@@ -949,7 +949,7 @@ export default function Photography({
                           alt={`${formatAlbumName(activeAlbum?.name)} photo ${index + 1}`}
                           width={440}
                           height={280}
-                          transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.3" }]}
+                          transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.1" }]}
                           className="h-52 w-full cursor-pointer object-cover object-center transition duration-200 group-hover:scale-105 sm:h-36"
                           loading="lazy"
                           sizes="(min-width: 1024px) 240px, 50vw"
