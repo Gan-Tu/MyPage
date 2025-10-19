@@ -252,7 +252,14 @@ function Avatar({ large = false, className, ...props }) {
 }
 
 export function Header() {
-  let isHomePage = useRouter().pathname === '/'
+  let router = useRouter()
+  let isHomePage = router.pathname === '/'
+  let noNavParam = router.query['no-nav']
+  let hideNavigation = Array.isArray(noNavParam)
+    ? noNavParam.some(
+        (value) => typeof value === 'string' && value.toLowerCase() === 'true'
+      )
+    : typeof noNavParam === 'string' && noNavParam.toLowerCase() === 'true'
 
   let headerRef = useRef()
   let avatarRef = useRef()
@@ -413,8 +420,12 @@ export function Header() {
                 )}
               </div>
               <div className="flex flex-1 justify-end md:justify-center">
-                <MobileNavigation className="pointer-events-auto md:hidden" />
-                <DesktopNavigation className="pointer-events-auto hidden md:block" />
+                {!hideNavigation && (
+                  <Fragment>
+                    <MobileNavigation className="pointer-events-auto md:hidden" />
+                    <DesktopNavigation className="pointer-events-auto hidden md:block" />
+                  </Fragment>
+                )}
               </div>
               {/* <div className="flex justify-end md:flex-1">
                 <div className="pointer-events-auto">
