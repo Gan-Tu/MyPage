@@ -248,8 +248,16 @@ function buildPublicUrl(bucketName, objectName) {
     .split('/')
     .map((segment) => encodeURIComponent(segment))
     .join('/')
-
   return `https://storage.googleapis.com/${bucketName}/${encodedPath}`
+}
+
+function buildRelativeUrl(objectName) {
+  const encodedPath = objectName
+    // .split('/')
+    // .map((segment) => encodeURIComponent(segment))
+    // .join('/')
+  // Relative to site root; bucket host prefix intentionally omitted for rendering src.
+  return `/${encodedPath}`
 }
 
 export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
@@ -306,12 +314,13 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
     const { baseName, isThumbnail } = normalizePhotoFileName(fileName)
 
     if (mediaType === 'video' || mediaType === 'unknown') {
-      const videoUrl = buildPublicUrl(bucketName, file.name)
+      const videoPublicUrl = buildPublicUrl(bucketName, file.name)
+      const videoRelativeUrl = buildRelativeUrl(file.name)
       const videoEntry = {
         name: fileName,
         path: file.name,
-        url: videoUrl,
-        originalUrl: videoUrl,
+        url: videoRelativeUrl,
+        originalUrl: videoPublicUrl,
         updated: file.metadata.updated || null,
         size: file.metadata.size ? Number(file.metadata.size) : null,
         contentType: file.metadata.contentType || null,
@@ -351,12 +360,15 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
     }
 
     if (isThumbnail) {
-      const previewUrl = buildPublicUrl(bucketName, file.name)
-      existingEntry.previewUrl = previewUrl
+      const previewPublicUrl = buildPublicUrl(bucketName, file.name)
+      const previewRelativeUrl = buildRelativeUrl(file.name)
+      // Use relative URL for rendering src
+      existingEntry.previewUrl = previewRelativeUrl
       existingEntry.previewPath = file.name
-      existingEntry.url = previewUrl
+      existingEntry.url = previewRelativeUrl
+      // Preserve absolute URL for hyperlinks to the original asset
       if (!existingEntry.originalUrl) {
-        existingEntry.originalUrl = previewUrl
+        existingEntry.originalUrl = previewPublicUrl
       }
       if (!existingEntry.path || existingEntry.path === baseObjectPath) {
         existingEntry.path = existingEntry.originalPath || file.name
@@ -371,11 +383,14 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
         existingEntry.contentType = file.metadata.contentType
       }
     } else {
-      const originalUrl = buildPublicUrl(bucketName, file.name)
+      const originalPublicUrl = buildPublicUrl(bucketName, file.name)
+      const originalRelativeUrl = buildRelativeUrl(file.name)
       existingEntry.name = baseName
       existingEntry.originalPath = file.name
-      existingEntry.originalUrl = originalUrl
-      existingEntry.url = existingEntry.previewUrl || originalUrl
+      // Absolute URL retained only for hyperlinks
+      existingEntry.originalUrl = originalPublicUrl
+      // For rendering src prefer relative preview, otherwise relative original
+      existingEntry.url = existingEntry.previewUrl || originalRelativeUrl
       existingEntry.updated = file.metadata.updated || existingEntry.updated
       existingEntry.size = file.metadata.size ? Number(file.metadata.size) : existingEntry.size
       existingEntry.contentType = file.metadata.contentType || existingEntry.contentType

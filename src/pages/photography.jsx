@@ -1,14 +1,14 @@
-import { Dialog, Transition } from '@headlessui/react'
-import Head from 'next/head'
-import Image from 'next/image'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Dialog, Transition } from '@headlessui/react';
+import { Image, ImageKitProvider, Video } from '@imagekit/next';
+import Head from 'next/head';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
-import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
-import { SimpleLayout } from '@/components/SimpleLayout'
-import { getPaginatedPhotoAlbums } from '@/lib/getPhotoAlbums'
+import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { SimpleLayout } from '@/components/SimpleLayout';
+import { getPaginatedPhotoAlbums } from '@/lib/getPhotoAlbums';
 
 const DEFAULT_LIGHTBOX_BACKGROUND =
   ' bg-black/90 backdrop-blur-sm dark:bg-black/95 dark:backdrop-blur '
@@ -349,8 +349,9 @@ export default function Photography({
       : null
 
   const canZoom = lightboxPhoto ? !isVideo(lightboxPhoto) : false
-  const originalMediaUrl = lightboxPhoto?.originalUrl || lightboxPhoto?.url || null
-  const displayMediaUrl = originalMediaUrl || lightboxPhoto?.url || null
+  // Use absolute URL only for hyperlinks; render media from relative URL
+  const originalMediaUrl = lightboxPhoto?.originalUrl || null
+  const displayMediaUrl = lightboxPhoto?.url || null
   const lightboxItemLabel = lightboxPhoto 
     ? `${lightboxPhoto.name || 'Untitled media'}${lightboxPhoto.size ? ` (${(lightboxPhoto.size / 1024 / 1024).toFixed(1)} MB)` : ''}`
     : 'Untitled media'
@@ -708,7 +709,7 @@ export default function Photography({
     : 'cursor-pointer'
 
   return (
-    <>
+    <ImageKitProvider urlEndpoint="https://ik.imagekit.io/tugan0329">
       <Head>
         <title>Photography - Gan Tu</title>
         <meta
@@ -761,15 +762,15 @@ export default function Photography({
                         {album.coverPhoto ? (
                           isVideo(album.coverPhoto) ? (
                             <div className="relative h-60 w-full bg-black">
-                              <video
-                                src={album.coverPhoto.url}
+                              <Image
+                                src={`${album.coverPhoto.url}/ik-thumbnail.jpg`}
+                                alt={`${formatAlbumName(album.name)} cover`}
+                                width={1024}
+                                height={768}
+                                sizes="(min-width: 1024px) 480px, 100vw"
+                                loading="lazy"
+                                unoptimized
                                 className="pointer-events-none h-full w-full object-cover object-center opacity-90"
-                                muted
-                                loop
-                                autoPlay
-                                playsInline
-                                preload="metadata"
-                                aria-hidden="true"
                               />
                               <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                                 Video
@@ -911,15 +912,14 @@ export default function Photography({
                     >
                       {isVideo(photo) ? (
                         <div className="relative h-52 w-full sm:h-36">
-                          <video
-                            src={photo.url}
+                          <Image
+                            src={`${photo.url}/ik-thumbnail.jpg`}
+                            alt={`${formatAlbumName(activeAlbum?.name)} item ${index + 1}`}
+                            width={640}
+                            height={640}
                             className="pointer-events-none h-full w-full object-cover object-center opacity-90 transition duration-200 group-hover:opacity-100"
-                            muted
-                            loop
-                            autoPlay
-                            playsInline
-                            preload="metadata"
-                            aria-hidden="true"
+                            loading="lazy"
+                            sizes="(min-width: 1024px) 240px, 50vw"
                           />
                           <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                             Video
@@ -1089,7 +1089,7 @@ export default function Photography({
                           onPointerCancel={endDrag}
                         >
                           {isVideo(lightboxPhoto) ? (
-                            <video
+                            <Video
                               src={displayMediaUrl || ''}
                               className="h-full w-full object-contain"
                               controls
@@ -1143,7 +1143,7 @@ export default function Photography({
           </div>
         </Dialog>
       </Transition.Root>
-    </>
+    </ImageKitProvider>
   )
 }
 
