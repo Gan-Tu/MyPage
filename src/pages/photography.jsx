@@ -476,7 +476,7 @@ export default function Photography({
     setZoomLevel(INITIAL_ZOOM)
   }
 
-  const moveLightbox = (direction) => {
+  const moveLightbox = useCallback((direction) => {
     if (
       !activeAlbum ||
       !Array.isArray(activeAlbum.photos) ||
@@ -499,13 +499,30 @@ export default function Photography({
 
     setLightboxPhotoIndex(nextIndex)
     setZoomLevel(INITIAL_ZOOM)
-  }
+  }, [activeAlbum, lightboxPhotoIndex, INITIAL_ZOOM])
 
   const closeLightbox = () => {
     setLightboxPhotoIndex(null)
     setZoomLevel(INITIAL_ZOOM)
     setIsDragging(false)
   }
+
+  // Keyboard navigation for lightbox (Left/Right arrows)
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!lightboxPhoto) return
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        moveLightbox(-1)
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        moveLightbox(1)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [lightboxPhoto, moveLightbox])
 
   const zoomIn = () => {
     setZoomLevel((current) =>
@@ -1006,8 +1023,22 @@ export default function Photography({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="relative flex w-full max-w-7xl flex-col items-center gap-4 text-zinc-100">
-                <div className="flex w-full max-w-5xl flex-col items-center gap-3 px-1 text-center text-sm sm:flex-row sm:items-start sm:justify-between sm:px-0 sm:text-left">
+              <Dialog.Panel
+                className="relative flex w-full max-w-7xl flex-col items-center gap-4 text-zinc-100"
+                onClick={(event) => {
+                  if (!lightboxPhoto) return
+                  if (isDragging) return
+                  const target = event.target
+                  const shouldKeepOpen = target?.closest?.('[data-lightbox-keep-open="true"]')
+                  if (!shouldKeepOpen) {
+                    closeLightbox()
+                  }
+                }}
+              >
+                <div
+                  className="flex w-full max-w-5xl flex-col items-center gap-3 px-1 text-center text-sm sm:flex-row sm:items-start sm:justify-between sm:px-0 sm:text-left"
+                  data-lightbox-keep-open="true"
+                >
                   <div className="flex flex-col gap-1 text-xs sm:text-sm">
                     <span className="text-base font-semibold text-zinc-100 sm:text-lg">
                       {formatAlbumName(activeAlbum?.name)}
@@ -1022,6 +1053,7 @@ export default function Photography({
                               target="_blank"
                               rel="noopener noreferrer"
                               className="underline decoration-dotted underline-offset-4 hover:text-white"
+                              data-lightbox-keep-open="true"
                             >
                               View Original
                             </a>
@@ -1033,7 +1065,7 @@ export default function Photography({
                       </span>
                     ) : null}
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-2">
+                  <div className="flex flex-wrap items-center justify-center gap-2" data-lightbox-keep-open="true">
                     {canZoom ? (
                       <>
                         <div className="mx-2 hidden h-6 w-px bg-zinc-700/80 sm:block" aria-hidden="true" />
@@ -1085,6 +1117,7 @@ export default function Photography({
                         onClick={() => moveLightbox(-1)}
                         aria-label="Previous item"
                         disabled={!activeAlbum || !activeAlbum.photos?.length}
+                        data-lightbox-keep-open="true"
                       >
                         <ArrowLeftIcon className="h-5 w-5" />
                       </button>
@@ -1094,6 +1127,7 @@ export default function Photography({
                         onClick={() => moveLightbox(1)}
                         aria-label="Next item"
                         disabled={!activeAlbum || !activeAlbum.photos?.length}
+                        data-lightbox-keep-open="true"
                       >
                         <ArrowRightIcon className="h-5 w-5" />
                       </button>
@@ -1116,6 +1150,7 @@ export default function Photography({
                               autoPlay
                               playsInline
                               preload="metadata"
+                              data-lightbox-keep-open="true"
                             />
                           ) : (
                             <Image
@@ -1131,6 +1166,7 @@ export default function Photography({
                                 transform: `scale(${zoomLevel})`,
                                 transformOrigin: 'center center',
                               }}
+                              data-lightbox-keep-open="true"
                               onLoadingComplete={({ naturalWidth, naturalHeight }) => {
                                 setPhotoDimensions((previous) => {
                                   const existing = previous[lightboxPhoto.path]
