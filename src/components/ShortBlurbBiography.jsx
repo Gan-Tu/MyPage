@@ -1,12 +1,17 @@
+import AudioPlayer from "./AudioPlayer"
+
 function ShortBlurbBiography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-      {/* <div className="py-2">
+       <div className="py-2">
         <AudioPlayer
-          title="Listen to this, in my AI voice clone!"
-          src="https://s3.amazonaws.com/tugan/public/audio/mypage-intro.mp3"
+          // title="Listen to this, in my AI voice clone!"
+          // src="https://s3.amazonaws.com/tugan/public/audio/mypage-intro.mp3"
+          title="Listen to this, narrated by ElevenLabs."
+          // src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography.mp3"
+          src="https://s3.amazonaws.com/tugan/public/audio/mypage-intro-10-25-2025.mp3"
         />
-      </div> */}
+      </div> 
 
       <p>
         I love traveling internationally. There's something magical about being on the road — hopping between cities, wandering through landmarks, and people-watching from a café window on a busy street. Every trip leaves behind memories that make each year feel richer and more colorful. Even the logistics — visas, itineraries, endless checklists — feel worthwhile because the anticipation is part of the adventure.

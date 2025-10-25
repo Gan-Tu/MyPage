@@ -1,12 +1,15 @@
+import AudioPlayer from "./AudioPlayer"
+
 function Biography() {
   return (
     <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
-      {/* <div className="py-2">
+       <div className="py-2">
         <AudioPlayer
-          title="Listen to this, in my AI voice clone!"
-          src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography.mp3"
+          title="Listen to this, narrated by ElevenLabs."
+          // src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography.mp3"
+          src="https://s3.amazonaws.com/tugan/public/audio/mypage-biography-10-25-2025.mp3"
         />
-      </div> */}
+      </div> 
       <p>
         Some people know me as a technical geek, others as a passionate designer. I see no reason to choose between the two. To me, great design doesn't just make something look beautiful — it makes every interaction feel effortless and satisfying. That sense of aesthetic craftsmanship is what I think sets me apart from the classic Silicon Valley stereotype.
       </p>
