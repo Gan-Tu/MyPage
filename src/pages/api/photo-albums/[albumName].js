@@ -1,3 +1,5 @@
+import { addCacheTag } from '@vercel/functions'
+
 import { getPhotoAlbumDetails } from '@/lib/getPhotoAlbums'
 
 export default async function handler(req, res) {
@@ -10,10 +12,19 @@ export default async function handler(req, res) {
   const { albumName } = req.query
   const resolvedName = Array.isArray(albumName) ? albumName[0] : albumName
 
+  // 1 month
+  res.setHeader('Cache-Control', 's-maxage=2592000, stale-while-revalidate=2592000')
+
   if (!resolvedName) {
     res.status(400).json({ error: 'An album name must be provided.' })
     return
   }
+
+  const normalizedTag =
+    typeof resolvedName === 'string'
+      ? resolvedName.replace(/[^a-zA-Z0-9-_]/g, '_')
+      : 'unknown'
+  addCacheTag('photo-albums', `photo-album-${normalizedTag}`)
 
   try {
     const album = await getPhotoAlbumDetails(resolvedName)

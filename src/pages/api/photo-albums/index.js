@@ -1,3 +1,5 @@
+import { addCacheTag } from '@vercel/functions'
+
 import { getPaginatedPhotoAlbums } from '@/lib/getPhotoAlbums'
 
 export default async function handler(req, res) {
@@ -6,6 +8,10 @@ export default async function handler(req, res) {
     res.status(405).json({ error: 'Method not allowed' })
     return
   }
+
+  // 1 month
+  res.setHeader('Cache-Control', 's-maxage=2592000, stale-while-revalidate=2592000')
+  addCacheTag('photo-albums')
 
   const { page, pageSize } = req.query
 

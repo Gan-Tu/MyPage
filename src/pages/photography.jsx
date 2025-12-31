@@ -789,25 +789,23 @@ export default function Photography({
                                 preload="metadata"
                                 muted
                                 playsInline
-                                autoPlay
-                                loop
                               />
                               <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                                 Video
                               </span>
                             </div>
                           ) : (
-                            <Image
-                              src={album.coverPhoto.url}
-                              alt={`${formatAlbumName(album.name)} cover`}
-                              width={440}
-                              height={280}
-                              transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.1" }]}
-                              sizes="(min-width: 1024px) 480px, 100vw"
-                              loading="lazy"
-                              unoptimized
-                              className="h-60 w-full cursor-pointer object-cover object-center"
-                            />
+                              <Image
+                                src={album.coverPhoto.url}
+                                alt={`${formatAlbumName(album.name)} cover`}
+                                width={440}
+                                height={280}
+                                transformation={[{ width: 440, height: 280, focus: "face", zoom: "0.1" }]}
+                                sizes="(min-width: 1024px) 480px, 100vw"
+                                loading="lazy"
+                                unoptimized
+                                className="h-60 w-full cursor-pointer object-cover object-center"
+                              />
                           )
                         ) : (
                           <div className="flex h-60 w-full items-center justify-center text-sm text-zinc-400">
@@ -953,8 +951,6 @@ export default function Photography({
                             preload="metadata"
                             muted
                             playsInline
-                            autoPlay
-                            loop
                           />
                           <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-black/70 px-2 py-1 text-xs font-medium text-white">
                             Video
@@ -1202,9 +1198,11 @@ export default function Photography({
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const lastGeneratedAt = new Date().toISOString()
   const DEFAULT_PAGE_SIZE = 9
+  // 1 month
+  const REVALIDATE_SECONDS = 60 * 60 * 24 * 30
 
   try {
     const { albums, summary, pagination } = await getPaginatedPhotoAlbums({
@@ -1220,6 +1218,7 @@ export async function getServerSideProps() {
         lastGeneratedAt,
         error: null,
       },
+      revalidate: REVALIDATE_SECONDS,
     }
   } catch (fetchError) {
     return {
@@ -1240,6 +1239,7 @@ export async function getServerSideProps() {
           fetchError?.message ||
           'Unable to load photo albums. Confirm the Google Cloud Storage bucket configuration.',
       },
+      revalidate: REVALIDATE_SECONDS,
     }
   }
 }
