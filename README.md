@@ -7,7 +7,7 @@ Latest attempt at making a personal website
 Run the helper script to shrink originals and generate thumbnails for a folder of images:
 
 ```bash
-node scripts/optimize-media.mjs <path-to-your-media> --concurrency 6
+node scripts/optimize-media.mjs --concurrency 6 <path-to-your-media> 
 ```
 
 Key defaults:

@@ -30,6 +30,26 @@ export const projects = [
     logo: 'https://mycool.ai/favicon.ico',
   },
   {
+    name: 'fastmcp-apps-sdk',
+    description:
+      'Widgets SDK for FastMCP targeting the OpenAI Apps SDK using a @widget(...) decorator.',
+    link: {
+      href: 'https://github.com/Gan-Tu/fastmcp-apps-sdk',
+      label: 'github.com',
+    },
+    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+  },
+  {
+    name: 'Widgets',
+    description:
+      'A compact, schema-driven widget renderer for chat UIs. A small, opinionated widget with minimal interactivity for LLM apps.',
+    link: {
+      href: 'https://github.com/Gan-Tu/Widgets',
+      label: 'github.com',
+    },
+    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+  },
+  {
     name: 'GoList',
     description:
       'An URL shortening service that lets you quickly browse a collection of links or files with one short URL.',
@@ -249,5 +269,35 @@ export const projects = [
       label: 'github.com',
     },
     logo: 'https://cdn-icons-png.flaticon.com/512/174/174013.png',
+  },
+  {
+    name: 'Blackjack',
+    description:
+      'A fully interactive and animated Blackjack game built with React, TypeScript, and Framer Motion. Place bets, hit, stand, double down, split hands, and play against the dealer while managing your in-game cash balance. Demo: https://cln.sh/qrLdgVSN',
+    link: {
+      href: 'https://github.com/Gan-Tu/Blackjack',
+      label: 'github.com',
+    },
+    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+  },
+  {
+    name: 'SharePaste',
+    description:
+      'A minimal, pretty, mobile-friendly Next.js app to quickly share text and files across devices using a single temporary session that expires after 10 minutes. One active passcode-protected session at a time, auto-saved text, multi-file uploads stored under a UUID with original filenames preserved, and a responsive Tailwind CSS UI.',
+    link: {
+      href: 'https://github.com/Gan-Tu/SharePaste',
+      label: 'github.com',
+    },
+    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+  },
+  {
+    name: 'OAuth Helper',
+    description:
+      'A simple Express app to generate OAuth tokens for Google and Dropbox using your own client credentials. Provide the Client ID and Client Secret in the UI, choose provider and scopes, and it guides you through authorization and refresh flows.',
+    link: {
+      href: 'https://github.com/Gan-Tu/OAuth-Helper',
+      label: 'github.com',
+    },
+    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
   },
 ]
