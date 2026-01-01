@@ -4,7 +4,7 @@
         <title>Gan Tu</title>
         <link>https://tugan.me</link>
         <description>Your blog description</description>
-        <lastBuildDate>Mon, 06 Oct 2025 07:24:35 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 01 Jan 2026 10:05:47 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <image>
@@ -12,6 +12,6 @@
             <url>https://tugan.me/favicon.ico</url>
             <link>https://tugan.me</link>
         </image>
-        <copyright>All rights reserved 2025</copyright>
+        <copyright>All rights reserved 2026</copyright>
     </channel>
 </rss>
