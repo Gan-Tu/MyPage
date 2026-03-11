@@ -187,7 +187,7 @@ function WorkResume() {
         variant="secondary"
         className="group mt-6 w-full"
         // onClick={() => toast.error('CV not available for download yet.')}
-        href="https://go.tugan.me/resume?dl=1"
+        href="https://vault.tugan.app/a/resume"
       >
         Download CV
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
