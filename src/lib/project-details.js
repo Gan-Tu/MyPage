@@ -10,6 +10,16 @@ export const projects = [
     logo: 'https://cdn1.iconfinder.com/data/icons/logos-brands-in-colors/544/Google__G__Logo-512.png',
   },
   {
+    name: 'Protected Assets',
+    description:
+      'A clean release-control workflow for protected links and document bundles, with request-gated access, timed auto-release windows, secure email delivery to requesters, instant notifications, and detailed requester insights.',
+    link: {
+      href: 'https://vault.tugan.app',
+      label: 'vault.tugan.app',
+    },
+    logo: 'https://vault.tugan.app/logo.png',
+  },
+  {
     name: 'URL Reader',
     description:
       'An API that takes a URL as a query parameter and returns a Markdown version of the parsed HTML content of the website.',
