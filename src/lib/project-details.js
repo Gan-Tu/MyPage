@@ -91,6 +91,16 @@ export const projects = [
   },
 
   {
+    name: 'DeepVFX',
+    description:
+      'A landing page and mock SaaS website for what an LLM API for production-ready visual effects could look like, with physics-first simulation workflows for fluids, particles, lighting, destruction, and atmospheric effects.',
+    link: {
+      href: 'https://deepvfx.ai/#solutions',
+      label: 'deepvfx.ai',
+    },
+    logo: 'https://mycool.ai/favicon.ico',
+  },
+  {
     name: 'AI Claim Extractor',
     description:
       'Claim Extractor is AI-powered factual claims breakdown tool. Provide any text, and it instantly extracts individual factual claims, in clear and concise sentences for analysis or review.',
