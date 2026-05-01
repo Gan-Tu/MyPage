@@ -40,6 +40,26 @@ export const projects = [
     logo: 'https://mycool.ai/favicon.ico',
   },
   {
+    name: 'Lumina',
+    description:
+      'A futuristic AR glasses landing site and SaaS-style product page for holographic displays, spatial computing, on-device intelligence, and privacy-first wearable experiences.',
+    link: {
+      href: 'https://lumina.tugan.app',
+      label: 'lumina.tugan.app',
+    },
+    logo: 'https://lumina.tugan.app/favicon.ico',
+  },
+  {
+    name: 'Widgets',
+    description:
+      'A compact, schema-driven widget renderer for chat UIs. A small, opinionated widget with minimal interactivity for LLM apps.',
+    link: {
+      href: 'https://widgets.gan.dev',
+      label: 'widgets.gan.dev',
+    },
+    logo: 'https://widgets.gan.dev/logo.png',
+  },
+  {
     name: 'fastmcp-apps-sdk',
     description:
       'Widgets SDK for FastMCP targeting the OpenAI Apps SDK using a @widget(...) decorator.',
@@ -50,14 +70,14 @@ export const projects = [
     logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
   },
   {
-    name: 'Widgets',
+    name: 'Project Music',
     description:
-      'A compact, schema-driven widget renderer for chat UIs. A small, opinionated widget with minimal interactivity for LLM apps.',
+      'An explorative UI concept website for being a hub for artists to collaborate and showcase their work and engage with their fans.',
     link: {
-      href: 'https://github.com/Gan-Tu/Widgets',
-      label: 'github.com',
+      href: 'https://project-music.tugan.app',
+      label: 'project-music',
     },
-    logo: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+    logo: 'https://i.pinimg.com/originals/a1/ba/f0/a1baf0aa72ec15ae66a72c0d316d98cc.jpg',
   },
   {
     name: 'GoList',
@@ -68,16 +88,6 @@ export const projects = [
       label: 'goli.st',
     },
     logo: 'https://goli.st/logo192.png',
-  },
-  {
-    name: 'Project Music',
-    description:
-      'An explorative UI concept website for being a hub for artists to collaborate and showcase their work and engage with their fans.',
-    link: {
-      href: 'https://project-music.tugan.app',
-      label: 'project-music',
-    },
-    logo: 'https://i.pinimg.com/originals/a1/ba/f0/a1baf0aa72ec15ae66a72c0d316d98cc.jpg',
   },
 
   {
