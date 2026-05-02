@@ -18,7 +18,7 @@ function ShortBlurbBiography() {
       </p>
 
       <p>
-        I keep a map covered in travel pins and photo albums filled with printed memories. Watching both of them fill up over time is deeply rewarding — a visual record of my life's journeys. So far, I've been to all seven continents and both polar regions, where I also discovered my passion for wildlife photography. My next big milestones include reaching South Pole as well as going to space.
+        I keep a map covered in travel pins and photo albums filled with printed memories. Watching both of them fill up over time is deeply rewarding — a visual record of my life's journeys. So far, I've been to all seven continents and both polar regions, where I also discovered my passion for wildlife photography. My next big milestones include going to the South Pole in 2027, as well as taking a suborbital space flight and hopefully one day going to space.
       </p>
 
       <p>
