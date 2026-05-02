@@ -58,10 +58,10 @@ export default function Tools() {
               annotation tool, Cloud uploading, scrolling capture, background
               tool, and a lot more.
             </Tool>
-            <Tool title="Alfred 5">
-              I fell in love with Alfred ever since it's introduced to me by
-              friends. It’s not the newest kid on the block but it’s still the
-              fastest. The Sublime Text of the application launcher world.
+            <Tool title="Raycast">
+              Raycast has become my go-to application launcher and productivity
+              command center on Mac. It is fast, extensible, and makes common
+              workflows feel just a little more effortless.
             </Tool>
             <Tool title="Things">
               Everyone has their own task management app, and Things is my
