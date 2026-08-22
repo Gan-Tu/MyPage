@@ -25,6 +25,7 @@ const IMAGE_EXTENSIONS = new Set([
 ])
 
 const THUMBNAIL_SUFFIX = '_thumbnail'
+const FEATURED_ALBUM_NAME = 'The Bits and Pieces of Life'
 
 const GLOBAL_CACHE_KEY = '__PHOTO_ALBUM_CACHE__'
 const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000
@@ -493,6 +494,13 @@ export async function getPhotoAlbums({ bucketName = DEFAULT_BUCKET } = {}) {
   })
 
   orderedAlbums.sort((a, b) => {
+    const aIsFeatured = a.name === FEATURED_ALBUM_NAME
+    const bIsFeatured = b.name === FEATURED_ALBUM_NAME
+
+    if (aIsFeatured !== bIsFeatured) {
+      return aIsFeatured ? -1 : 1
+    }
+
     // Extract year from album name (YYYY format)
     const aYearMatch = a.name.match(/\b(\d{4})\b/)
     const bYearMatch = b.name.match(/\b(\d{4})\b/)
