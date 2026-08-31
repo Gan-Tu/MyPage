@@ -31,7 +31,7 @@ function Biography() {
       </p>
 
       <p>
-        Outside of work, I travel — a lot. I've solo-traveled to all seven continents and 46 countries (and counting). My goal is one new country every year. I'm a recreational scuba diver, currently training for my pilot's license, and constantly trying to improve my skiing and snowboarding. Oh, and I'm also an amateur magician 🎩 — because life's more fun with a little mystery.
+        Outside of work, I travel — a lot. I've solo-traveled to all seven continents and 37+ countries (and counting). My goal is one new country every year. I'm a recreational scuba diver, currently training for my pilot's license, and constantly trying to improve my skiing and snowboarding. Oh, and I'm also an amateur magician 🎩 — because life's more fun with a little mystery.
       </p>
     </div>
   )
